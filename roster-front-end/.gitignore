@@ -10,7 +10,6 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-server/node_modules/
 
 # IDEs and editors
 .idea/
@@ -22,7 +21,7 @@ server/node_modules/
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -37,11 +36,6 @@ server/node_modules/
 /libpeerconnection.log
 testem.log
 /typings
-server/src/database.js
-server/src/server.js
-server/src/users.js
-server/src/users.routes.js
-
 
 # System files
 .DS_Store
