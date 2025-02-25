@@ -41,6 +41,8 @@ server/src/database.js
 server/src/server.js
 server/src/users.js
 server/src/users.routes.js
+roster-backend/.env
+
 
 
 # System files
