@@ -1,6 +1,7 @@
 import * as mongodb from "mongodb";
 
 export interface Users {
+    _id?: mongodb.ObjectId;
     name: string;
     phoneNumber: number;
     email: string;
@@ -12,6 +13,6 @@ export interface Users {
     profileImage: mongodb.Binary;
     idFile: mongodb.Binary;
     visaFile?:mongodb.Binary;
-    _id?: mongodb.ObjectId;
+    
 
 }
