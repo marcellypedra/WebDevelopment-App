@@ -41,7 +41,7 @@ roster-backend/src/database.js
 roster-backend/src/server.js
 roster-backend/src/users.js
 roster-backend/src/users.routes.js
-roster-backend/src/shifts.j
+roster-backend/src/shifts.js
 roster-backend/src/shifts.routes.js
 roster-backend/.env
 
