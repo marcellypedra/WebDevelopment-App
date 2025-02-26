@@ -33,7 +33,7 @@ async function applySchemaValidation(db: mongodb.Db) {
     const usersSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "visaexpirydate", "idnumber", "profileImage", "idFile"],
+            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "idNumber", "profileImage", "idFile"],
             additionalProperties: false,
             properties: {
                 _id: {},
@@ -93,6 +93,12 @@ async function applySchemaValidation(db: mongodb.Db) {
                 idFile: {
                     "bsonType": "binData",
                     "description": "ID image stored as binary data",
+                    
+                },
+
+                visaFile: {
+                    "bsonType": "binData",
+                    "description": "Visa image stored as binary data",
                     
                 },
 

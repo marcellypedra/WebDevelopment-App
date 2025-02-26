@@ -8,8 +8,9 @@ export interface Users {
     address: string;
     DOB: Date;
     nationality: string;
-    visaexpirydate: Date;
-    idnumber: string;
+    visaExpiryDate: Date;
+    idNumber: string;
+    roleType: string;
     profileImage: mongodb.Binary;
     idFile: mongodb.Binary;
     visaFile?:mongodb.Binary;
