@@ -7,10 +7,10 @@
 /bazel-out
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
-server/node_modules/
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+
 
 # IDEs and editors
 .idea/
@@ -22,7 +22,7 @@ server/node_modules/
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
+**/.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
