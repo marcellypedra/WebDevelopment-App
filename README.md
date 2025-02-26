@@ -16,9 +16,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 1. Make the script executable by giving it the correct permissions.
 
-   chmod +x init.sh 
+   `chmod +x init.sh` 
 
-2. Run init.sh to install all necessary dependencies for setup the environment
+2. Run `init.sh` to install all necessary dependencies for setup the environment
 
 
 
@@ -30,13 +30,13 @@ ATLAS_URI= "[PASTE HERE YOUR ATLAS URI WITH YOUR CREDENTIALS]"
 
 2. Convert .ts files into .js files by running the following commands:
 
-   cd roster-backend
+   `cd roster-backend`
 
-   npx tsc src/server.ts
+   `npx tsc src/server.ts`
 
 3. Start the backend by running the command:
 
-   node src/server.js
+   `node src/server.js`
 
 
 ## Development Angular Project
