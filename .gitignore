@@ -48,6 +48,10 @@ testem.log
 /roster-backend/package-lock.json
 /roster-front-end/package-lock.json
 /roster-front-end/package.json
+<<<<<<< HEAD
+=======
+
+>>>>>>> b12f111a8e75c5564b7bc4d4174abacf11d085c1
 
 
 # System files
