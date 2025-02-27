@@ -44,6 +44,8 @@ testem.log
 /roster-backend/src/shifts.js
 /roster-backend/src/shifts.routes.js
 /roster-backend/.env
+**/package.json
+**/package-lock.json
 
 
 
