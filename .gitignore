@@ -44,9 +44,10 @@ testem.log
 /roster-backend/src/shifts.js
 /roster-backend/src/shifts.routes.js
 /roster-backend/.env
-**/package.json
-**/package-lock.json
-
+/roster-backend/package.json
+/roster-backend/package-lock.json
+/roster-front-end/package-lock.json
+/roster-front-end/package.json
 
 
 # System files
