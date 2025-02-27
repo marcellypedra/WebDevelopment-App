@@ -8,13 +8,42 @@ Package Manager: npm 10.8.2
 
 Run the following command to install bootstrap-> npm install bootstrap
 
-# RoasterManagementApp
+# RosterManagementApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.3.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.3. and  use as database MongoDB Atlas.
 
-## Development server
+## Environment Setup
+
+1. Make the script executable by giving it the correct permissions.
+
+   `chmod +x init.sh` 
+
+2. Run `init.sh` to install all necessary dependencies for setup the environment
+
+
+
+## Run Backend
+
+1. Create an .env inside roster-backend with your MongoDB Atlas Credentials following the example below:
+
+ATLAS_URI= "[PASTE HERE YOUR ATLAS URI WITH YOUR CREDENTIALS]"
+
+2. Convert .ts files into .js files by running the following commands:
+
+   `cd roster-backend`
+
+   `npx tsc src/server.ts`
+
+3. Start the backend by running the command:
+
+   `node src/server.js`
+
+
+## Development Angular Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+
 
 ## Code scaffolding
 

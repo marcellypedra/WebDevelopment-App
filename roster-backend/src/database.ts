@@ -1,9 +1,12 @@
 import * as mongodb from "mongodb";
 import { Users } from "./users";
+import { Shifts } from "./shifts";
 
 export const collections: {
     Users?: mongodb.Collection<Users>;
+    Shifts?: mongodb.Collection<Shifts>;
 } = {};
+    
 
 export async function connectToDatabase(uri: string) {
     const client = new mongodb.MongoClient(uri);
@@ -14,15 +17,23 @@ export async function connectToDatabase(uri: string) {
 
     const usersCollection = db.collection<Users>("users");
     collections.Users = usersCollection;
+
+    const shiftsCollection = db.collection<Shifts>("shifts");
+    collections.Shifts = shiftsCollection;
+
 }
 
 // Update our existing collection with JSON schema validation so we know our documents will always match the shape of our Employee model, even if added elsewhere.
-// For more information about schema validation, see this blog series: https://www.mongodb.com/blog/post/json-schema-validation--locking-down-your-model-the-smart-way
+
 async function applySchemaValidation(db: mongodb.Db) {
-    const jsonSchema = {
+
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(col => col.name);
+
+    const usersSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "visaexpirydate", "idnumber", "profileImage", "idFile"],
+            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "idNumber", "profileImage", "idFile"],
             additionalProperties: false,
             properties: {
                 _id: {},
@@ -31,10 +42,10 @@ async function applySchemaValidation(db: mongodb.Db) {
                     description: "'name' is required and is a string",
                 },
                 phoneNumber: {
-                    bsonType: ["int", "double"],
+                    bsonType: "string",
                     minimum: 9,
-                    maximum: 10,
-                    description: "'phoneNumber' is required and must be an integer with a minimum of 9.",
+                    maximum: 13,
+                    description: "'phoneNumber' is required and must be a string with a minimum of 9.",
                     
                 },
                 address: {
@@ -52,17 +63,26 @@ async function applySchemaValidation(db: mongodb.Db) {
                     description: "'nationality' is required and is a string",
                     
                 },
-                visaexpirydate: {
+                visaExpiryDate: {
                     bsonType: "date",
-                    description: "'visaexpirydate' must be valid in the future",
+                    description: "'visaexpirydate' must be valid date in the future",
                     
                 }, 
-                idnumber: {
-                    bsonType: ["int", "double"],
+                idNumber: {
+                    bsonType: "string",
                     minimum: 9,
-                    maximum: 10,
-                    description: "'idnumber' is required and must be an integer with a minimum of 9.",
+                    maximum: 13,
+                    description: "'idnumber' is required and must be a string with a minimum of 9.",
                     
+                },
+                roleType: {
+                 enum: [
+                    "BarStaff",
+                    "FloorStaff",
+                    "Management",
+                 ],
+                 description: "'roleType' is required and must be one of the listed options."
+
                 },
                 profileImage: {
                     "bsonType": "binData",
@@ -76,18 +96,67 @@ async function applySchemaValidation(db: mongodb.Db) {
                     
                 },
 
+                visaFile: {
+                    "bsonType": "binData",
+                    "description": "Visa image stored as binary data",
+                    
+                },
 
+
+            },
+        },
+
+    };
+
+    const shiftsSchema = {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["userId", "shiftDate", "startTime", "endTime"],
+            additionalProperties: false,
+            properties: {
+                _id: {},
+                userId: {
+                    bsonType: "objectId",
+                    description: "Foreign key referencing Users collection",
+                },
+                shiftDate: { 
+                    bsonType: "date",
+                    description: "'shiftDate' must be a valid date in the future",
+                
+                 },
+                startTime: { bsonType: "string" },
+                endTime: { bsonType: "string" },
             },
         },
     };
 
-    // Try applying the modification to the collection, if the collection doesn't exist, create it 
-   await db.command({
-        collMod: "employees",
-        validator: jsonSchema
-    }).catch(async (error: mongodb.MongoServerError) => {
-        if (error.codeName === "NamespaceNotFound") {
-            await db.createCollection("employees", {validator: jsonSchema});
-        }
-    });
+
+
+
+ // Ensure "users" collection exists before applying schema validation
+    if (!collectionNames.includes("users")) {
+        await db.createCollection("users", { validator: usersSchema });
+    } else {
+        await db.command({
+            collMod: "users",
+            validator: usersSchema
+        }).catch((error: mongodb.MongoServerError) => {
+            console.warn(`⚠️ Warning: Could not modify users collection schema.`, error.message);
+        });
+    }
+
+    // Ensure "shifts" collection exists before applying schema validation
+    if (!collectionNames.includes("shifts")) {
+        await db.createCollection("shifts", { validator: shiftsSchema });
+    } else {
+        await db.command({
+            collMod: "shifts",
+            validator: shiftsSchema
+        }).catch((error: mongodb.MongoServerError) => {
+            console.warn(`⚠️ Warning: Could not modify shifts collection schema.`, error.message);
+        });
+    }
+
+    // Create Foreign Key Index for shifts.userId (if not already created)
+    await db.collection("shifts").createIndex({ userId: 1 }, { unique: false });
 }
