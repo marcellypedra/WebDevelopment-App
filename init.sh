@@ -1,5 +1,19 @@
 #!/bin/bash
 
+echo "@@ Starting setup script..."
+
+# Navigate to backend and install dependencies
+if [ -d "roster-backend" ]; then
+    echo "@@ Moving into roster-backend..."
+    cd roster-backend || exit 1
+    echo "@@ Running npm install for backend..."
+    npm install
+    cd ..
+else
+    echo "@@ ERROR: roster-backend directory not found!"
+    exit 1
+fi
+
 # Function to install npm packages if not already installed
 install_package() {
     if ! npm list "$1" --depth=0 &> /dev/null; then
@@ -26,14 +40,6 @@ else
     echo "@@ NPM is already installed."
 fi
 
-# Initialize npm project if package.json does not exist
-if [ ! -f package.json ]; then
-    echo "@@ Initializing npm project."
-    npm init -y
-else
-    echo "@@ package.json already exists."
-fi
-
 # Install backend dependencies
 echo "@@ Setting up backend dependencies..."
 cd roster-backend || exit 1
@@ -43,9 +49,10 @@ install_package dotenv
 install_package mongodb
 
 # Install TypeScript and related types
+echo "@@ Installing TypeScript dependencies..."
 npm install -D typescript @types/cors @types/express @types/node ts-node
 if [ $? -ne 0 ]; then
-    echo "@@ Error installing TypeScript dependencies. Exiting."
+    echo "@@ ERROR: Failed to install TypeScript dependencies!"
     exit 1
 fi
 cd ..
@@ -59,18 +66,44 @@ else
 fi
 
 # Setup Angular frontend
-echo "@@ Setting up Angular frontend..."
-cd roster-front-end || exit 1
-if [ ! -f package.json ]; then
-    echo "@@ Initializing Angular project."
-    ng new . --skip-install
+if [ -d "roster-front-end" ]; then
+    echo "@@ Moving into roster-front-end..."
+    cd roster-front-end || exit 1
+else
+    echo "@@ ERROR: roster-front-end directory not found!"
+    exit 1
 fi
 
-# Install Angular Material
-ng add @angular/material --defaults
+if [ ! -f package.json ]; then
+    echo "@@ ERROR: Angular project not initialized!"
+    exit 1
+else
+    echo "@@ Angular project detected."
+fi
+
+# Install Angular dependencies
+echo "@@ Installing frontend dependencies..."
+npm install
+
+# Install Angular Material if not installed
+if ! npm list @angular/material @angular/cdk --depth=0 &> /dev/null; then
+    echo "@@ Installing Angular Material..."
+    ng add @angular/material @angular/cdk --defaults
+else
+    echo "@@ Angular Material is already installed."
+fi
+
+echo "@@ Environment setup complete."
+
+# Check if start.sh exists before running it
+if [ -f "./start.sh" ]; then
+    echo "@@ Running start.sh script..."
+    chmod +x start.sh
+    ./start.sh
+else
+    echo "@@ WARNING: start.sh script not found. Skipping."
+fi
 
 # Start Angular application
 echo "@@ Running Angular..."
 ng serve
-
-echo "@@ Environment setup complete."
