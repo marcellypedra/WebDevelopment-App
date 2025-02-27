@@ -33,7 +33,7 @@ async function applySchemaValidation(db: mongodb.Db) {
     const usersSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "idNumber", "profileImage", "idFile"],
+            required: ["name", "phoneNumber", "email", "address", "DOB", "nationality", "idNumber"],
             additionalProperties: false,
             properties: {
                 _id: {},
@@ -46,6 +46,11 @@ async function applySchemaValidation(db: mongodb.Db) {
                     minimum: 9,
                     maximum: 13,
                     description: "'phoneNumber' is required and must be a string with a minimum of 9.",
+                },
+                
+                email: {
+                        bsonType: "string",
+                        description: "'email' is required and must be a string"
                     
                 },
                 address: {
