@@ -95,15 +95,6 @@ fi
 
 echo "@@ Environment setup complete."
 
-# Check if start.sh exists before running it
-if [ -f "./start.sh" ]; then
-    echo "@@ Running start.sh script..."
-    chmod +x start.sh
-    ./start.sh
-else
-    echo "@@ WARNING: start.sh script not found. Skipping."
-fi
-
 # Start Angular application
 echo "@@ Running Angular..."
 ng serve

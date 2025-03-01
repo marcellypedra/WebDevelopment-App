@@ -1,0 +1,34 @@
+<app-layout
+    title="Login into your account"
+    primaryBtnText="Log in"
+    secondaryBtnText="Submit"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!loginForm.valid"
+>
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <app-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="Email"
+            placeholder="john@example.com"
+        >
+            <img src="/assets/icons/email.png" alt="Email Icon"/>
+        </app-input>
+
+        <app-input
+            formControlName="password"
+            inputName="password"
+            [type]="hidePassword ? 'password' : 'text'"
+            label="Your Password"
+        >
+            <mat-icon (click)="togglePassword()">
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+        </app-input>
+        <span class="forgot-password">Forgot password?</span>
+
+        <!-- @@ TODO @@ <span class="forgot-password" (click)="forgotPassword()">Forgot password?</span>-->
+    </form>
+</app-layout>

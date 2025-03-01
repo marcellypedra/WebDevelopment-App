@@ -1,0 +1,50 @@
+<app-layout
+    title="Register!"
+    primaryBtnText="Register"
+    secondaryBtnText="Log in"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!registerForm.valid"
+>
+    <form [formGroup]="registerForm">
+        <app-input
+            formControlName="name"
+            inputName="name"
+            type="text"
+            label="Your name"
+            placeholder="John Doe"
+        >
+            <img class="icon" src="/assets/icons/user-white.png"/>
+        </app-input>
+        <app-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="Email"
+            placeholder="john@exemple.com"
+        >
+            <img class="icon" src="/assets/icons/email.png"/>
+        </app-input>
+        <app-input
+            formControlName="password"
+            inputName="password"
+            [type]="hidePassword ? 'password' : 'text'"
+            label="Your Password"
+        >
+            <mat-icon (click)="togglePassword()">
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+        </app-input>
+
+        <app-input
+            formControlName="passwordConfirm"
+            inputName="passwordConfirm"
+            [type]="hidePasswordConfirm ? 'password' : 'text'"
+            label="Confirm your Password"
+        >
+            <mat-icon (click)="togglePasswordConfirm()">
+                {{ hidePasswordConfirm ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+        </app-input>
+    </form>
+</app-layout>
