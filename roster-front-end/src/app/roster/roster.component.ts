@@ -11,38 +11,51 @@ import { RosterService } from '../services/roster.service';
 })
 export class RosterComponent implements OnInit {
   userLoggedIn = '';
+  selectedDate = '';
+  shiftsForSelectedDate: any[] = [];
+
   configurationOptions: CalendarOptions = {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
-    events: [
-      { title: 'Shift1', start: '2025-02-26' },
-      { title: 'Shift2', start: '2025-02-28' },
-    ],
+    events: [],
+    // events: [
+    //   { title: 'Shift1', start: '2025-02-26' },
+    //   { title: 'Shift2', start: '2025-02-28' },
+    // ],
   };
 
-  ngOnInit(): void {}
+  // ngOnInit(): void {}
 
-  // constructor(private rosterService: RosterService) {}
+  constructor(private rosterService: RosterService) {}
 
-  // ngOnInit() {
-  //   this.userLoggedIn = localStorage.getItem('userId') || '';
-  //   if (this.userLoggedIn) {
-  //     this.loadUserShifts();
-  //   }
-  // }
+  ngOnInit() {
+    this.userLoggedIn = localStorage.getItem('userId') || '';
+    if (this.userLoggedIn) {
+      this.loadUserShifts();
+    }
+  }
 
-  // loadUserShifts() {
-  //   this.rosterService
-  //     .getShiftsForUser(this.userLoggedIn)
-  //     .subscribe((userShifts) => {
-  //       this.configurationOptions = {
-  //         ...this.configurationOptions,
-  //         events: userShifts.map((shift) => ({
-  //           title: 'Your Shift', // Generic shift title
-  //           start: shift.shiftDate,
-  //           color: '#007bff',
-  //         })),
-  //       };
-  //     });
-  // } //loadShifts ends here
+  loadUserShifts() {
+    this.rosterService
+      .getShiftsForUser(this.userLoggedIn)
+      .subscribe((userShifts) => {
+        this.configurationOptions = {
+          ...this.configurationOptions,
+          events: userShifts.map((shift) => ({
+            title: 'Your Shift', // Generic shift title
+            start: shift.shiftDate,
+            color: '#007bff',
+          })),
+        };
+      });
+  } //loadShifts ends here
+
+  onDateClick(information: any) {
+    this.selectedDate = information.dateStr;
+    this.rosterService
+      .getShiftsByDate(this.selectedDate)
+      .subscribe((shifts) => {
+        this.shiftsForSelectedDate = shifts;
+      });
+  } //ondateClick ends here
 }

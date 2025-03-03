@@ -10,6 +10,10 @@ export class RosterService {
   constructor(private httpclient: HttpClient) {}
 
   getShiftsForUser(userId: string): Observable<any[]> {
-    return this.httpclient.get<any[]>(`${this.url}/${userId}`);
+    return this.httpclient.get<any[]>(`${this.url}/user/${userId}`);
+  }
+
+  getShiftsByDate(dateSelected: string): Observable<any> {
+    return this.httpclient.get<any[]>(`${this.url}/date/${dateSelected}`);
   }
 }

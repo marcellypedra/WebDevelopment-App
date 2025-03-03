@@ -1,4 +1,25 @@
 <div class="roster-container row col-md-6 offset-md-3">
-  <full-calendar [options]="configurationOptions"></full-calendar>
+  <full-calendar
+    [options]="configurationOptions"
+    (dateClick)="onDateClick($event)"
+  ></full-calendar>
   <!-- <p>roster component</p> -->
+</div>
+
+<div *ngIf="shiftsForSelectedDate.length > 0" class="mt-2">
+  <h3>Shifts for {{ selectedDate }}</h3>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let shift of shiftsForSelectedDate">
+      <div class="card mb-2">
+        <div class="card-body">
+          <h5 class="card-title">{{ shift.userName }}</h5>
+          <p class="card-text">
+            <strong>Shift Date:</strong>{{ shift.shiftDate }}<br />
+            <strong>Role:</strong>{{ shift.role || "N/A" }}
+          </p>
+        </div>
+      </div>
+      <!--class card-->
+    </div>
+  </div>
 </div>
