@@ -1,0 +1,74 @@
+<app-layout
+    title="Register a new employee!"
+    primaryBtnText="Register"
+    secondaryBtnText="Log in"
+    (submit)="submit()"
+    (navigate)="navigate()"
+>
+
+<form [formGroup]="registerForm" class="register-form-container">
+    <!-- User Details -->
+    <div class="form-section">
+        <h3>User Details</h3>
+        <app-input formControlName="name" inputName="name" type="text" label="Your name" maxlength="50">
+            <img class="icon" src="/assets/icons/user-white.png"/>
+        </app-input>
+        <app-input formControlName="email" inputName="email" type="email" label="Email" maxlength="30">
+            <img class="icon" src="/assets/icons/email.png"/>
+        </app-input>
+        <app-input mask="(00) 000-0000" formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" >
+            <img class="icon" src="/assets/icons/phone.png"/>
+        </app-input>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="form-section">
+        <h3>Personal Information</h3>
+        <app-input mask="0000-00-00" formControlName="DOB" inputName="DOB" InputTypes="date" label="Date of Birth">
+            <img class="icon" src="/assets/icons/agenda.png"/>
+        </app-input>
+        <app-input formControlName="nationality" inputName="nationality" type="text" label="Nationality">
+            <img class="icon" src="/assets/icons/nationality.png"/>
+        </app-input>
+        <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
+            <img class="icon" src="/assets/icons/address.png"/>
+        </app-input>
+        <app-input formControlName="idNumber" inputName="idNumber" type="text" label="ID Number" maxlength="15">
+            <img class="icon" src="/assets/icons/id.png"/>
+        </app-input>
+        <app-input mask="0000-00-00" formControlName="visaExpiryDate" inputName="visaExpiryDate" InputTypes="date" label="Visa Expiry (Optional)">
+            <img class="icon" src="/assets/icons/agenda.png"/>
+        </app-input>
+    </div>
+
+    <!-- Role & Upload Documents -->
+    <div class="form-section role-upload-section">
+        <h3>Role & Upload Documents</h3>
+        <mat-form-field appearance="fill">
+            <mat-label>Role Type</mat-label>
+            <mat-select formControlName="roleType">
+                <mat-option value="BarStaff">Bar Staff</mat-option>
+                <mat-option value="FloorStaff">Floor Staff</mat-option>
+                <mat-option value="Manager">Manager</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="file-upload">
+            <label for="idFile">Upload <b>ID</b> File:</label>
+            <input type="file" id="idFile" (change)="onFileSelect($event, 'idFile')">
+        </div>
+
+        <div class="file-upload">
+            <label for="visaFile">Upload Visa File (Optional):</label>
+            <input type="file" id="visaFile" (change)="onFileSelect($event, 'visaFile')">
+        </div>
+
+        <div class="file-upload">
+            <label for="profileImage">Upload Profile Image:</label>
+            <input type="file" id="profileImage" (change)="onFileSelect($event, 'profileImage')">
+        </div>
+    </div>
+</form>
+
+
+</app-layout>

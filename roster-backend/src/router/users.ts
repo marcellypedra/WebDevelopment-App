@@ -1,11 +1,15 @@
 import express from 'express';
-
-import { getAllUsers, partiallyUpdateUser, updateUser, deleteUser } from '../controllers/users';
+import { getUserProfile, getAllUsers, partiallyUpdateUser, updateUser, deleteUser } from '../controllers/users';
 import { isAuthenticated, isManager, canUpdateUser } from '../middlewares/userPermissions';
 
-export default (router: express.Router) => {
-    router.get('/users', isAuthenticated, isManager, getAllUsers);
-    router.put('/users/:id', isAuthenticated, isManager, updateUser);
-    router.patch('/users/:id', isAuthenticated, canUpdateUser, partiallyUpdateUser);
-    router.delete('/users/:id', isAuthenticated, isManager, deleteUser);
-}
+const usersRouter = express.Router();
+
+usersRouter.get('/:id', isAuthenticated, getUserProfile);
+usersRouter.get('/', isAuthenticated, isManager, getAllUsers);
+
+usersRouter.put('/:id', updateUser);
+usersRouter.patch('/:id', partiallyUpdateUser);
+
+usersRouter.delete('/:id', deleteUser);
+
+export default usersRouter;

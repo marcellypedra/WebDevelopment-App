@@ -1,10 +1,10 @@
 import express from "express";
-import authentication from "./router/authentication";
-import users from "./router/users";
-const userRouter = express.Router();
+import authenticationRouter from "./router/authentication";
+import usersRouter from "./router/users";
 
-export default (): express.Router => {
-    authentication(userRouter);
-    users(userRouter);
-    return userRouter;
-}
+const router = express.Router();
+
+router.use('/auth', authenticationRouter);
+router.use('/users', usersRouter);
+
+export default router;

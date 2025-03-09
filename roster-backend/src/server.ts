@@ -7,7 +7,7 @@ import compression from "compression";
 import cors from "cors";
 import mongoose from "mongoose";
 import { connectToDatabase } from "./db/database";
-import userRouter from "./users.routes";
+import router from "./users.routes";
 
 dotenv.config();
 
@@ -21,6 +21,7 @@ if (!ATLAS_URI) {
 const app = express();
 app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compression());
 app.use(bodyParser.json());
@@ -35,6 +36,7 @@ connectToDatabase(ATLAS_URI)
     mongoose.Promise = Promise;
     mongoose.connection.on("error", (error: Error) => console.log(error));
 
-    app.use("/", userRouter());
+    app.use("/", router);
+  
   })
   .catch((error) => console.error(error));

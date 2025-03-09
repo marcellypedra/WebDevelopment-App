@@ -1,6 +1,6 @@
 import express from 'express';
 import { get, merge } from 'lodash';
-import { getUserBySessionToken } from '../db/userModel';
+import { getUserBySessionToken } from '../db/users';
 
 interface Identity {
   roleType: string;
@@ -8,7 +8,7 @@ interface Identity {
 }
 
 export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log("isAuthenticated middleware called");
+  console.log("@@ isAuthenticated called");
 
   try {
     const sessionToken = req.cookies['ROSTER-AUTH'];
@@ -36,26 +36,22 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
 };
 
 export const isManager = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log("isManager middleware called");
+  console.log("@@ isManager middleware called");
   try {
-    const identity = get(req, 'identity') as Identity | undefined;
-    console.log("Identity in isManager:", identity);
+    const identity = get(req, 'identity') as Identity;
+    console.log("@@ Identity in isManager:", identity);
 
-    if (!identity) {
-      console.log("No identity found in isManager");
-      return res.sendStatus(403);
-    }
-    console.log("Role type in isManager:", identity.roleType);
+    if (!identity) return res.status(403).json({ message: '!! Unauthorized !!' });
+    console.log("@@ Role type in isManager:", identity.roleType);
 
     if (identity.roleType !== 'Manager') {
-      console.log("User is not a Manager");
-      return res.sendStatus(403);
+      return res.status(403).json({ message: '!! You do not have permission to access this resource !!' });
     }
-    console.log("User is a Manager, proceeding to next middleware");
+    console.log("User is a Manager >>>");
     next();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error in isManager middleware:", error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -63,10 +59,10 @@ export const canUpdateUser = async (req: express.Request, res: express.Response,
   console.log("canUpdateUser middleware called");
   try {
     const { id } = req.params;
-    const identity = get(req, 'identity') as Identity | undefined;
+    const identity = get(req, 'identity') as Identity;
 
     if (!identity) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: 'Unauthorized' });
     }
 
     if (identity.roleType === "Manager" || identity._id.toString() === id) {
@@ -75,9 +71,9 @@ export const canUpdateUser = async (req: express.Request, res: express.Response,
   }  
 
     console.log("Unauthorized update attempt!");
-    return res.sendStatus(403);
+    return res.status(403).json({ message: 'Unauthorized to update user data' });
   } catch (error) {
-    console.error("Error in update user function:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error in canUpdateUser middleware:", error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
