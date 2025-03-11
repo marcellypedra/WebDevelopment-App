@@ -10,8 +10,10 @@ import { AuthService } from '../../services/auth-service.service';
 export class UsersComponent implements OnInit {
   searchForm!: FormGroup;
   editForm!: FormGroup;
+  userPhotoUrl: string = '';
   currentUser: any;
   users: any[] = [];
+  userId: string = '';
   selectedUser: any = null;
 
   constructor(
@@ -20,16 +22,68 @@ export class UsersComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.userId = sessionStorage.getItem('ROSTER-ID') || '';
+    console.log('User ID:', this.userId);
+    
+    if (!this.userId) {
+      console.error('User ID is missing!');
+      return;
+    }
+  
     this.searchForm = this.fb.group({
       searchQuery: ['', Validators.required]
     });
-
+  
     this.editForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', Validators.required], 
+      DOB: ['', Validators.required],
+      nationality: ['', Validators.required],
+      address: ['', Validators.required],
+      idNumber: ['', Validators.required],
+      password: [''] 
     });
+  
+    this.loadUserProfile();
   }
+  
+  loadUserProfile(): void {
+    if (!this.userId) {
+      console.error('No User ID found. Cannot load profile.');
+      return;
+    }
 
+    this.authService.getUserById(this.userId).subscribe(
+      (data: any) => {
+        if (!data || !data.name) {
+          console.error('Invalid user data:', data);
+          return;
+        }
+        console.log('Full user data:', data);
+        this.currentUser = data;
+
+        this.userPhotoUrl = this.currentUser.profileImage?.data
+        ? `data:${this.currentUser.profileImage.contentType};base64,${this.currentUser.profileImage.data.toString('base64')}`
+        : '/assets/icons/user.png';
+
+        this.editForm.patchValue({
+          name: data.name,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          DOB: data.DOB,
+          nationality: data.nationality,
+          address: data.address,
+          idNumber: data.idNumber,
+          password: data.password
+        });
+      },
+      (error: any) => {
+        console.error('Error loading user profile:', error);
+      }
+    );
+  }
+    
   searchUsers(): void {
     if (this.searchForm.valid) {
       const query = this.searchForm.get('searchQuery')?.value;
@@ -47,16 +101,22 @@ export class UsersComponent implements OnInit {
         }
       );
     }
-  }
-  
+  }  
 
   selectUser(user: any): void {
     this.selectedUser = user;
     this.editForm.patchValue({
       name: user.name,
-      email: user.email
+      email: user.email,
+      password: ''
     });
-  }
+
+    if (user.profileImage?.data) {
+      this.selectedUser.profileImage = `data:${user.profileImage.contentType};base64,${user.profileImage.data.toString('base64')}`;
+    } else {
+      this.selectedUser.profileImage = '/assets/icons/user.png';
+    }
+  }  
 
   updateUser(): void {
     if (this.editForm.valid && this.selectedUser) {

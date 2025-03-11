@@ -30,26 +30,34 @@ export interface User extends Document {
 }
 export interface UserDocument extends Document, User {}
 
-const UserSchema: Schema = new Schema({
+const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    phoneNumber: { type: String, required: true },
     address: { type: String, required: true },
     DOB: { type: Date, required: true },
     nationality: { type: String, required: true },
-    visaExpiryDate: { type: Date, required: false },
+    visaExpiryDate: { type: Date },
     idNumber: { type: String, required: true, unique: true },
-    roleType: { type: String, enum: ['BarStaff', 'FloorStaff', 'Manager'], required: true
+    roleType: { type: String, required: true, enum: ['BarStaff', 'FloorStaff', 'Manager'] },
+    profileImage: {
+        data: Buffer,
+        contentType: String
+    },
+    visaFile: {
+        data: Buffer,
+        contentType: String
+    },
+    idFile: {
+        data: Buffer,
+        contentType: String
     },
     authentication: {
-        password: { type: String, required: true, select: false },
-        salt: { type: String, required: true, select: false },
-        sessionToken: { type: String, select: false }
-    },
-    profileImage: { data: Buffer, contentType: String }, 
-    idFile: { data: Buffer, contentType: String }, 
-    visaFile: { data: Buffer, contentType: String }    
-})
+        salt: { type: String, required: true },
+        password: { type: String, required: true },
+        sessionToken: { type: String }
+    }
+});
 
 export const UserModel = mongoose.model<UserDocument>('User', UserSchema);
 

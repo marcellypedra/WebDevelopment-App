@@ -7,5 +7,5 @@
 <div *ngFor="let user of users">
   <h3>{{ user.name }}</h3>
   <p>{{ user.email }} | Role: {{ user.roleType }}</p>
-  <img *ngIf="user.profileImage" [src]="'data:image/png;base64,' + user.profileImage" alt="User Profile" />
+  <img *ngIf="user.profileImage" [src]="user.profileImage" alt="Profile Image" />
 </div>

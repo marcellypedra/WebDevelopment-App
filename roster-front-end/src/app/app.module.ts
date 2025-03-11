@@ -29,7 +29,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService } from './services/auth-service.service';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { UsersComponent } from './pages/users/users.component';
-import { UserComponent } from './pages/user/user.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,7 +43,6 @@ import { UserComponent } from './pages/user/user.component';
     FooterComponent,
     ProfileComponent,
     UsersComponent,
-    UserComponent,
     PasswordComponent,
     UsersComponent
   ],

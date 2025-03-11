@@ -29,9 +29,11 @@ export const login = async (req: express.Request, res: express.Response) => {
         res.cookie('ROSTER-AUTH', user.authentication.sessionToken, { 
             httpOnly: true,
             sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
+            //secure: process.env.NODE_ENV === 'production',
+            secure: true,
             domain: 'localhost',
-            path: '/' //,maxAge: 1000 * 60 * 60 * 24 // 1-day expiry for session token
+            path: '/',
+            maxAge: 1000 * 60 * 60 * 24 // 1-day expiry for session token
         });
         console.log('Profile image type:', typeof user.profileImage);
 
@@ -48,34 +50,15 @@ export const login = async (req: express.Request, res: express.Response) => {
             nationality: user.nationality,
             visaExpiryDate: user.visaExpiryDate,
             idNumber: user.idNumber,
-            profileImageBase64: user.profileImage
-            ? user.profileImage instanceof Buffer ? user.profileImage.toString('base64') : null
+            profileImage: user.profileImage && user.profileImage.data 
+            ? `data:${user.profileImage.contentType};base64,${user.profileImage.data.toString('base64')}`
             : null
         });        
     } catch (error) {
         console.error("Error during login:", error);
         return res.status(500).json({ message: 'Internal Server Error' });
       }
-}
-/*export const authenticateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try {
-        const sessionToken = req.cookies['ROSTER-AUTH'];
-        if (!sessionToken) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        const user = await UserModel.findOne({ "authentication.sessionToken": sessionToken }).select('-authentication.password -authentication.salt');
-        if (!user) {
-            return res.status(401).json({ message: "Invalid session" });
-        }
-
-        req.user = user as Document;  
-        next();
-    } catch (error) {
-        console.error("Authentication error:", error);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-};*/
+};
 export const logout = async (req: express.Request, res: express.Response) => {
     try {
       res.clearCookie('ROSTER-AUTH', {
@@ -102,7 +85,7 @@ export const register = async (req: express.Request, res: express.Response) => {
     console.log('@@ Register called');
     try {
         console.log("@@@ Incoming request body:", req.body);
-        console.log("@@@ Incoming request file:", req.file);
+        console.log("@@@ Incoming request file:", req.file ? req.file.originalname : "No file uploaded");
         
         const { name, email, password, phoneNumber, address, DOB, nationality, roleType, visaExpiryDate, idNumber } = req.body;
 
@@ -113,38 +96,39 @@ export const register = async (req: express.Request, res: express.Response) => {
             return res.status(400).json({ message: "Missing required information", missingFields });
         }
 
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await UserModel.findOne({ 
+            $or: [{ email }, { idNumber }]
+        });
         if (existingUser) {
-            return res.status(400).json({ message: "Email already exists" });
+            return res.status(400).json({ 
+                message: existingUser.email === email ? "Email already exists" : "ID Number already exists" 
+            });
         }
-
-        const existingIdNumber = await UserModel.findOne({ idNumber }); 
-        if (existingIdNumber) {
-            return res.status(400).json({ message: "ID Number already exists" });
-        }
-
+        
         const salt = random();
-        const user = await createUser({
+        const newUser = await createUser({
             name,
             email,
             phoneNumber,
             address,
-            DOB,
+            DOB: new Date(DOB),
             nationality,
-            visaExpiryDate,
+            visaExpiryDate: visaExpiryDate ? new Date(visaExpiryDate) : undefined,
             idNumber,
             roleType,
+            profileImage: req.file ? { 
+                data: req.file.buffer, 
+                contentType: req.file.mimetype
+            } : null,            
             authentication: {
                 salt,
                 password: authentication(salt, password)
-            },
-            profileImage: req.file ? Buffer.from(req.file.buffer) : undefined,
-            profileImageContentType: req.file ? req.file.mimetype : undefined
+            }
         });
+        
+        console.log("@@@ User created successfully:", newUser);
 
-        console.log("@@@ User created successfully:", user);
-
-        return res.status(201).json({ message: "User created successfully", user });
+        return res.status(201).json({ message: "User created successfully", newUser });
     } catch (error) {
         console.error("@@@ Error during registration:", error);
         return res.status(500).json({ message: "Internal Server Error" });

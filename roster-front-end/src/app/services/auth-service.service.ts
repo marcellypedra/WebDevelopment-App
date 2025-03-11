@@ -20,15 +20,11 @@ export class AuthService {
       )
       .pipe(
         tap((response) => {
+          console.log('Login Response:', response);
           sessionStorage.setItem('ROSTER-AUTH', response.token);
           sessionStorage.setItem('ROSTER-ID', response._id);
         })
       );
-  }
-  getCurrentUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/authenticateUser`, {
-      withCredentials: true,
-    });
   }
   logout(): void {
     sessionStorage.clear();
@@ -65,11 +61,13 @@ export class AuthService {
       withCredentials: true,
     });
   }
+
   updateUserProfile(userId: string, updatedData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/users/${userId}`, updatedData, {
       withCredentials: true,
     });
   }
+
   getUserProfile(userId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/users/${userId}`, {
       withCredentials: true,
@@ -85,12 +83,8 @@ export class AuthService {
     });
   }
 
-  getCurrentUserId(): string {
-    //return sessionStorage.getItem('userId');
-    return sessionStorage.getItem('ROSTER-ID') || '';
-  }
-
   isManager(): boolean {
     return sessionStorage.getItem('roleType') === 'Manager';
   }
+  
 }

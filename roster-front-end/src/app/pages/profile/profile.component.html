@@ -4,7 +4,7 @@
   [disablePrimaryBtn]="!profileForm.valid"
   (submit)="updateProfile()"
   [userPhoto]="userPhotoUrl"
-  [src]="userPhotoUrl"
+  [src]="currentUser?.profileImage || '/assets/icons/user.png'" 
   alt="User Photo"
 >
 

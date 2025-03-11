@@ -70,22 +70,38 @@ async function applySchemaValidation(db: Connection) {
             "'roleType' is required and must be one of the listed options.",
         },
         profileImage: {
-          bsonType: "binData",
-          description: "Profile image stored as binary data",
+          bsonType: "object",
+          properties: {
+              data: { bsonType: "binData" },
+              contentType: { bsonType: "string" }
+          }
         },
-
         idFile: {
-          bsonType: "binData",
-          description: "ID image stored as binary data",
+            bsonType: "object",
+            properties: {
+                data: { bsonType: "binData" },
+                contentType: { bsonType: "string" }
+            }
         },
-
         visaFile: {
-          bsonType: "binData",
-          description: "Visa image stored as binary data",
+            bsonType: "object",
+            properties: {
+                data: { bsonType: "binData" },
+                contentType: { bsonType: "string" }
+            }
         },
-      },
+        authentication: {
+            bsonType: "object",
+            required: ["password", "salt"],
+            properties: {
+                password: { bsonType: "string" },
+                salt: { bsonType: "string" },
+                sessionToken: { bsonType: "string" }
+            }
+        }
     },
-  };
+  },
+};
 
   const shiftsSchema = {
     $jsonSchema: {

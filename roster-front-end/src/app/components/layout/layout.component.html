@@ -2,8 +2,7 @@
     <section class="form-section">
         <img *ngIf="!userPhoto" src="/assets/logo/logo.png" alt="Logo"/>
         <img *ngIf="userPhoto" [src]="userPhoto" alt="User Photo" class="user-photo"/>
-        
-        
+                
         <h2>{{ title }}</h2>
         <ng-content></ng-content>
 

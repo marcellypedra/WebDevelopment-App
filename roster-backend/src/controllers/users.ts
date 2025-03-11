@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, updateUserById, deleteUserById, getUserById, UserModel } from '../db/users'
+import { getUsers, deleteUserById, getUserById, getUserByEmail } from '../db/users'
 
 export const getUserProfile = async (req: express.Request, res: express.Response) => {
     console.log("@@ getUserProfile called");
@@ -8,7 +8,6 @@ export const getUserProfile = async (req: express.Request, res: express.Response
     try {
         const { id } = req.params;
         const user = await getUserById(id);
-
         console.log("User retrieved:", user);
 
         if (!user) {
@@ -16,24 +15,23 @@ export const getUserProfile = async (req: express.Request, res: express.Response
         }
 
         const userObject = user.toObject();
-        let profileImageBase64 = null;
+        let profileImage = null;
 
         if (userObject.profileImage && Buffer.isBuffer(userObject.profileImage.data)) {
-            profileImageBase64 = 
+            profileImage = 
             `data:${userObject.profileImage.contentType};base64,${userObject.profileImage.data.toString('base64')}`;
         }               
 
         // Return the user object with the base64 encoded image
         return res.status(200).json({
             ...userObject,
-            profileImageBase64
+            profileImage
         });
     } catch (error) {
         console.error("Error in getUserProfile function:", error);
         return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
-
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     console.log(' @@ getAllUsers called');
@@ -48,7 +46,10 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
 }
 
 export const partiallyUpdateUser = async (req: express.Request, res: express.Response) => {
-    console.log(" @@ partiallyUpdateUser called");    
+    console.log('@@ partiallyUpdateUser called');
+    console.log("Raw request body:", req.body);
+    console.log("Raw request file:", req.file ? req.file.originalname : "No file uploaded");
+
     try {
         const { id } = req.params;
         const { email, phoneNumber, password, address } = req.body;
@@ -78,41 +79,34 @@ export const partiallyUpdateUser = async (req: express.Request, res: express.Res
 }
 
 export const updateUser = async (req: express.Request, res: express.Response) => {
-    console.log(" @@ updateUser called");    
+    console.log('@@ updateUser called');
+    console.log("Raw request body:", req.body);
+    console.log("Raw request file:", req.file ? req.file.originalname : "No file uploaded");
+
     try {
-        const { id } = req.params;
-        const updatedUser = await UserModel.findByIdAndUpdate(id, req.body, { new: true });
-       
-        const { name, DOB, email, phoneNumber, password, address, nationality, visaExpiryDate, idNumber, roleType } = req.body;
+        const { email, name, phoneNumber, address } = req.body;
+        if (!email) return res.status(400).json({ message: "Email is required for update" });
 
-        console.log("Request body:", req.body);
+        const user = await getUserByEmail(email);
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-        if (Object.keys(req.body).length === 0) {
-            return res.status(400).json({ message: "No update fields provided" });
+        user.name = name || user.name;
+        user.phoneNumber = phoneNumber || user.phoneNumber;
+        user.address = address || user.address;
+
+        if (req.file) {
+            user.profileImage = { data: Buffer.from(req.file.buffer), contentType: req.file.mimetype };
         }
-
-        const user = await getUserById(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });        
-        }
-        if (name) user.name = name;
-        if (DOB) user.DOB = DOB;
-        if (email) user.email = email;
-        if (password) user.authentication.password = password; 
-        if (phoneNumber) user.phoneNumber = phoneNumber;
-        if (address) user.address = address;
-        if (nationality) user.nationality = nationality;
-        if (visaExpiryDate) user.visaExpiryDate = visaExpiryDate;
-        if (idNumber) user.idNumber = idNumber;
-        if (roleType) user.roleType = roleType;
 
         await user.save();
-        return res.status(200).json({ message: 'User updated successfully', user });
+        return res.status(200).json({ message: "User updated successfully", user });
+
     } catch (error) {
-        console.error("Error in updateUser:", error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
+        console.error("Error updating user:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 
 export const deleteUser = async (req: express.Request, res: express.Response) => {
     console.log("@@ deleteUser called");    

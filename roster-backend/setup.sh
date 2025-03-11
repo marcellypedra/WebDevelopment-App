@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Clear the terminal
 clear
 echo "@@ Starting setup script..."
 
@@ -31,16 +33,24 @@ echo "@@ Cleaning up old dependencies..."
 rm -f package-lock.json
 rm -rf node_modules
 
-# Create or update package.json
+# Create or update package.json with necessary dependencies and devDependencies
 echo "@@ Updating package.json..."
 cat > package.json << EOL
 {
+  "name": "roster-backend",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc"
+  },
   "devDependencies": {
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.0",
-    "@types/express": "4.17.17",
+    "@types/express": "^4.17.17",
     "@types/lodash": "^4.14.202",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.24",
@@ -59,22 +69,40 @@ cat > package.json << EOL
 }
 EOL
 
-# Install dependencies
+# Install dependencies from package.json
 echo "@@ Installing dependencies..."
 npm install
 
-# Check for installation errors
+# Check if npm install was successful
 if [ $? -ne 0 ]; then
     echo "@@ ERROR: Failed to install dependencies!"
     exit 1
 fi
 
-echo "@@ Environment setup complete."
+echo "@@ Dependencies installed successfully."
+
+# Compile TypeScript files if tsconfig.json exists
+if [ -f "tsconfig.json" ]; then
+    echo "@@ Compiling TypeScript files..."
+    npx tsc
+
+    # Check if compilation was successful
+    if [ $? -ne 0 ]; then
+        echo "@@ ERROR: TypeScript compilation failed!"
+        exit 1
+    fi
+
+    echo "@@ TypeScript compilation complete."
+else
+    echo "@@ WARNING: tsconfig.json not found! Skipping TypeScript compilation."
+fi
 
 # Start Backend application using nodemon if src/server.ts exists, otherwise show error.
 if [ -f "src/server.ts" ]; then
     echo "@@ Running Backend with Nodemon..."
-    nodemon 
+    nodemon src/server.ts
 else
     echo "@@ ERROR: src/server.ts not found! Ensure your backend entry file exists."
 fi
+
+echo "@@ Setup script complete."

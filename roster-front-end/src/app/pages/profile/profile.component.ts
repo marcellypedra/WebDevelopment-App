@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
+
 export class ProfileComponent implements OnInit {
   userPhotoUrl: string = '';
   currentUser: any;
@@ -15,9 +16,7 @@ export class ProfileComponent implements OnInit {
   userId: string = '';
 
   // @@ File selection
-  onFileSelect(event: Event, fileType: string): void {
-    console.log(fileType, event);
-  }
+  onFileSelect(event: Event, fileType: string): void { console.log(fileType, event); }
 
   constructor(
     private authService: AuthService,
@@ -41,15 +40,19 @@ export class ProfileComponent implements OnInit {
       DOB: ['', Validators.required],
       nationality: ['', Validators.required],
       address: ['', Validators.required],
-      idNumber: ['', Validators.required],
+      idNumber: ['', Validators.required]
     });
 
-    this.loadUserProfile();
+    if (this.userId) { this.loadUserProfile();}
 
     this.profileForm.controls['phoneNumber'].valueChanges.subscribe(value => {
       this.onPhoneNumberChange(value);
     });
   }
+  handleImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = '/assets/icons/user.png'; // Fallback image
+}
 
   loadUserProfile(): void {
     if (!this.userId) {
@@ -66,7 +69,7 @@ export class ProfileComponent implements OnInit {
         console.log('Full user data:', data);
         this.currentUser = data;
 
-        this.userPhotoUrl = data.profileImageBase64 || '/assets/icons/user.png';
+        this.userPhotoUrl = data.profileImage || '/assets/icons/user.png';
 
         this.profileForm.patchValue({
           name: data.name,
@@ -85,20 +88,15 @@ export class ProfileComponent implements OnInit {
   }
   formatPhoneNumber(phoneNumber: string): string {
     if (!phoneNumber) return '';
-  
-    // Remove all non-numeric characters
+
     const numbersOnly = phoneNumber.replace(/\D/g, '');
-  
-    // Limit to a maximum of 9 digits
     const maxDigits = 9;
     const trimmed = numbersOnly.slice(0, maxDigits);
   
-    // Apply formatting if we have enough digits
     if (trimmed.length >= 9) {
       return `(${trimmed.slice(0, 2)}) ${trimmed.slice(2, 5)}-${trimmed.slice(5, 9)}`;
     }
-  
-    return trimmed; // Return unformatted if less than 9 digits
+    return trimmed; 
   }
 
   onPhoneNumberChange(phoneNumber: string): void {
@@ -153,4 +151,3 @@ export class ProfileComponent implements OnInit {
     });
   }
 }
-
