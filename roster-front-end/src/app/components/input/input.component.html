@@ -1,0 +1,18 @@
+<div class="input-wrapper">
+    <label [for]="inputName">{{ label }}</label>
+      <div class="input-content">
+          <input
+              [type]="type"
+              [id]="inputName"
+              [placeholder]="placeholder"
+              [value]="value"
+              [mask]="mask"
+              (input)="onInput($event)"
+              (blur)="onTouched()"
+          />
+          <div class="icon">
+              <ng-content></ng-content>
+          </div>
+      </div>
+  </div>
+  

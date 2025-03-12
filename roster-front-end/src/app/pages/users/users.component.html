@@ -1,0 +1,43 @@
+<app-layout
+  title="Hi {{ currentUser?.name }}!"
+  [primaryBtnText]="'Search Users'"
+  [userPhoto]="userPhotoUrl"
+>
+
+<div class="grid-container">
+  <div class="search-column">
+    <form [formGroup]="searchForm">
+      <app-input type="text" label="Search" formControlName="searchQuery" placeholder="Enter user name or email"></app-input>
+    </form>
+    <button (click)="searchUsers()" [disabled]="!searchForm.valid">Search Users</button>
+  </div>
+
+  <div class="user-list-column">
+    <div class="user-list-container" *ngIf="users && users.length > 0">
+      <h3>List of Users</h3>
+      <div *ngFor="let user of users" class="user-item" (click)="selectUser(user)">
+        <img *ngIf="user.profileImage" [src]="user.profileImage" alt="User Profile" />
+        <div>
+          <p>{{ user.name }}</p>
+          <p>Role: {{ user.roleType }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="edit-user-column">
+    <div class="edit-user" *ngIf="selectedUser">
+      <h3>Edit User</h3>
+      <form [formGroup]="editForm">
+        <app-input type="text" label="Name" formControlName="name" placeholder="Enter user name"></app-input>
+        <app-input type="email" label="Email" formControlName="email" placeholder="Enter user email"></app-input>
+        <app-input type="password" label="password" formControlName="password"></app-input>
+      </form>
+      <div class="btn-edit">
+        <button (click)="updateUser()">Update User</button>
+        <button (click)="deleteUser()">Delete User</button>
+      </div>
+    </div>
+  </div>
+</div>
+</app-layout>
