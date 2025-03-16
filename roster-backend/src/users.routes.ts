@@ -4,4 +4,3 @@ import { collections } from "./database";
 
 export const usersRouter = express.Router();
 usersRouter.use(express.json());
-

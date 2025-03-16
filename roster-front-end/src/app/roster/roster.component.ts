@@ -38,12 +38,17 @@ export class RosterComponent implements OnInit {
   loadUserShifts() {
     this.rosterService
       .getShiftsForUser(this.userLoggedIn)
-      .subscribe((userShifts) => {
+      .subscribe((userShiftsRes) => {
+        if (!userShiftsRes || !userShiftsRes.shiftsForUser) {
+          console.log('No shifts found for User');
+          return;
+        }
+
         this.configurationOptions = {
           ...this.configurationOptions,
-          events: userShifts.map((shift) => ({
-            title: 'Your Shift', // Generic shift title
-            start: shift.shiftDate,
+          events: userShiftsRes.shiftsForUser.map((shift) => ({
+            title: 'Your Shift Timings',
+            start: new Date(shift.shiftDate),
             color: '#007bff',
           })),
         };
