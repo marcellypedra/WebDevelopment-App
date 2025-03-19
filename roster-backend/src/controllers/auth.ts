@@ -1,6 +1,6 @@
 import express from "express";
-import { Document } from 'mongoose';
-import { UserDocument, UserModel, createUser, getUserByEmail } from "../db/users";
+import { UserModel, createUser, getUserByEmail } from "../db/users";
+import { generateToken, generateRefreshToken, verifyToken } from "../helpers/generateJWT";
 import { random, authentication } from "../helpers/encryptedPassword";
 
 export const login = async (req: express.Request, res: express.Response) => {
@@ -11,76 +11,77 @@ export const login = async (req: express.Request, res: express.Response) => {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const user = await getUserByEmail(email).select('authentication.salt authentication.password name email phoneNumber roleType DOB address nationality visaExpiryDate idNumber profileImage');
-        console.log("Found User:", user);
+        //const user = await getUserByEmail(email).select('authentication.salt authentication.password name email phoneNumber roleType DOB address nationality visaExpiryDate idNumber profileImage');
+        
+        const user = await getUserByEmail(email);
         if (!user) { 
             return res.status(404).json({ message: "User not found" }); 
         }
+        console.log("Found User:", user.email);        
 
         const expectedHash = authentication(user.authentication.salt, password);
         if (user.authentication.password !== expectedHash){
             return res.status(403).json({ message: "Invalid credentials" });
         }
 
-        const salt = random();
-        user.authentication.sessionToken = authentication(salt, user._id.toString())
+        // Generate access and refresh tokens
+        const accessToken = generateToken(user._id.toString(), user.roleType.toString());
+        const refreshToken = generateRefreshToken(user._id.toString());
+
+        // Save refresh token in the database or HTTP-only cookie
+        user.authentication.sessionToken = refreshToken;
         await user.save();
 
-        res.cookie('ROSTER-AUTH', user.authentication.sessionToken, { 
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            sameSite: 'lax',
-            //secure: process.env.NODE_ENV === 'production',
-            secure: true,
-            domain: 'localhost',
-            path: '/',
-            maxAge: 1000 * 60 * 60 * 24 // 1-day expiry for session token
+            secure: false, //process.env.NODE_ENV === "production",
+            sameSite: "lax", //"strict",
+            path: "/" //auth/refresh-token",
         });
-        console.log('Profile image type:', typeof user.profileImage);
+        console.log("Cookies on request:", req.cookies);
 
         return res.status(200).json({
             message: "Login successful",
-            token: user.authentication.sessionToken,
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            roleType: user.roleType,
-            address: user.address,
-            DOB: user.DOB,
-            nationality: user.nationality,
-            visaExpiryDate: user.visaExpiryDate,
-            idNumber: user.idNumber,
-            profileImage: user.profileImage && user.profileImage.data 
-            ? `data:${user.profileImage.contentType};base64,${user.profileImage.data.toString('base64')}`
-            : null
+            accessToken,
+            user: { _id: user._id, name: user.name, email: user.email }
         });        
     } catch (error) {
         console.error("Error during login:", error);
         return res.status(500).json({ message: 'Internal Server Error' });
       }
 };
-export const logout = async (req: express.Request, res: express.Response) => {
-    try {
-      res.clearCookie('ROSTER-AUTH', {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        domain: 'localhost',
-        path: '/'
-      });
-  
-      const user = await getUserByEmail(req.body.email);
-      if (user) {
-        user.authentication.sessionToken = null; 
-        await user.save();
-      }
-  
-      return res.status(200).json({ message: 'Logged out successfully' });
-    } catch (error) {
-        console.error("Error during logout:", error);
-        return res.status(500).json({ message: 'Failed to log out' });
+export const refreshToken = async (req: express.Request, res: express.Response) => {
+    console.log('@@ refreshToken called');
+
+    const refreshToken = req.cookies.refreshToken; 
+    if (!refreshToken) {
+        return res.status(401).json({ message: "Refresh token required" });
     }
+
+    try {
+        const decoded = verifyToken(refreshToken, true);  // Ensure second param is 'true' for refresh token
+        if (!decoded || !decoded.id) {
+            return res.status(403).json({ message: "Invalid refresh token" });
+        }
+
+        const user = await UserModel.findById(decoded.id);
+        if (!user || user.authentication.sessionToken !== refreshToken) {
+            return res.status(403).json({ message: "Invalid refresh token" });
+        }
+
+        const newAccessToken = generateToken(user._id.toString(), user.roleType.toString());
+
+        return res.status(200).json({ accessToken: newAccessToken });
+    } catch (error) {
+        console.error("Error verifying refresh token:", error);
+        return res.status(403).json({ message: "Invalid refresh token" });
+    }
+};  
+export const logout = async (req: express.Request, res: express.Response) => {
+    res.clearCookie("refreshToken", { path: '/' });
+    return res.status(200).json({ message: "Logged out successfully" });
 };
+
 export const register = async (req: express.Request, res: express.Response) => {
     console.log('@@ Register called');
     try {

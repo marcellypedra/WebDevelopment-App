@@ -2,20 +2,24 @@ import express from 'express';
 import multer from 'multer';
 const upload = multer({ storage: multer.memoryStorage() });
 
-import { getUserProfile, getAllUsers, partiallyUpdateUser, updateUser, deleteUser } from '../controllers/users';
-import { isAuthenticated, isManager, canUpdateUser } from '../middlewares/userPermissions';
+import { getUserProfile, getAllUsers, searchUsers, updateUser, deleteUser } from '../controllers/users';
+import { authenticateUser, isManager } from '../middlewares/userPermissions';
 
 const usersRouter = express.Router();
 
-usersRouter.get('/:id', isAuthenticated, getUserProfile);
-usersRouter.get('/', isAuthenticated, isManager, getAllUsers);
+usersRouter.use(authenticateUser);
 
-usersRouter.put('/:id', upload.single('profileImage'), updateUser);
-usersRouter.put('/:id', updateUser);
+usersRouter.get('/', isManager, getAllUsers);
 
-usersRouter.patch('/:id', upload.single('profileImage'), partiallyUpdateUser);
-usersRouter.patch('/:id', partiallyUpdateUser);
+usersRouter.get('/search', isManager, searchUsers); 
+usersRouter.get('/:id', getUserProfile); 
 
-usersRouter.delete('/:id', deleteUser);
+usersRouter.put('/:id', upload.fields([
+    { name: 'profileImage', maxCount: 1 },
+    { name: 'idFile', maxCount: 1 },
+    { name: 'visaFile', maxCount: 1 }
+]), updateUser);
+
+usersRouter.delete('/:id', isManager, deleteUser);
 
 export default usersRouter;

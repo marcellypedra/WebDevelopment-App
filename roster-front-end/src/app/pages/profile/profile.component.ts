@@ -10,40 +10,40 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 
 export class ProfileComponent implements OnInit {
-  userPhotoUrl: string = '';
+  userProfileImage: string | null = null; 
+  userIdFile: string | null = null;
+  userVisaFile: string | null = null;
+
   currentUser: any;
   profileForm!: FormGroup;
   userId: string = '';
-
+  
   // @@ File selection
-  onFileSelect(event: Event, fileType: string): void { console.log(fileType, event); }
+  selectedProfileImage: File | null = null;
+  selectedIdFile: File | null = null;
+  selectedVisaFile: File | null = null;
 
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+  ) { }
 
   ngOnInit(): void {
-    this.userId = sessionStorage.getItem('ROSTER-ID') || '';
-    console.log('User ID:', this.userId);
+    this.userId = this.authService.getUserIdFromToken() || '';
+    console.log('Profile Page: User ID:', this.userId);
 
     if (!this.userId) {
-      console.error('User ID is missing!');
+      console.error('User ID is missing from session storage!');
       return;
     }
+    this.loadUserProfile();
 
     this.profileForm = this.fb.group({
-      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', Validators.required], 
-      DOB: ['', Validators.required],
-      nationality: ['', Validators.required],
       address: ['', Validators.required],
-      idNumber: ['', Validators.required]
     });
-
-    if (this.userId) { this.loadUserProfile();}
 
     this.profileForm.controls['phoneNumber'].valueChanges.subscribe(value => {
       this.onPhoneNumberChange(value);
@@ -51,8 +51,8 @@ export class ProfileComponent implements OnInit {
   }
   handleImageError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '/assets/icons/user.png'; // Fallback image
-}
+    img.src = '/assets/icons/user.png'; //@@ If don't find the profileImage
+  }
 
   loadUserProfile(): void {
     if (!this.userId) {
@@ -60,25 +60,23 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.authService.getUserById(this.userId).subscribe(
+    this.authService.loadUserProfile(this.userId).subscribe(
       (data: any) => {
         if (!data || !data.name) {
           console.error('Invalid user data:', data);
           return;
         }
-        console.log('Full user data:', data);
+        console.log('User profile loaded:', data);
         this.currentUser = data;
 
-        this.userPhotoUrl = data.profileImage || '/assets/icons/user.png';
+         //@@ If don't find the profileImage
+         this.userProfileImage = data.profileImage && data.profileImage !== '' 
+         ? data.profileImage : '/assets/icons/user.png';
 
         this.profileForm.patchValue({
-          name: data.name,
-          email: data.email,
-          phoneNumber: this.formatPhoneNumber(data.phoneNumber),
-          DOB: data.DOB,
-          nationality: data.nationality,
-          address: data.address,
-          idNumber: data.idNumber,
+          email: data.email || '',
+          phoneNumber: this.formatPhoneNumber(data.phoneNumber || ''),
+          address: data.address || '',
         });
       },
       (error: any) => {
@@ -106,30 +104,73 @@ export class ProfileComponent implements OnInit {
       this.profileForm.controls['phoneNumber'].setValue(formattedNumber, { emitEvent: false });
     }
   } 
+  onFileSelect(event: any, fileType: string): void {
+    const selectedFile = event.target.files[0] as File;
+
+    if (selectedFile) {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        switch (fileType) {
+          case 'profileImage':
+            this.userProfileImage = e.target.result;
+            this.selectedProfileImage = selectedFile;
+            break;
+          case 'IdFile':
+            this.userIdFile = e.target.result;
+            this.selectedIdFile = selectedFile;
+            break;
+          case 'visaFile':
+            this.userVisaFile = e.target.result;
+            this.selectedVisaFile = selectedFile;
+            break;
+        }
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  }
 
   updateProfile(): void {
     if (this.profileForm.valid) {
-      this.authService
-        .updateUserProfile(this.userId, this.profileForm.value)
-        .subscribe(
-          (response: any) => {
-            console.log('Profile updated successfully:', response);
-            this.showSuccess();
-
-            this.getUserProfile();
-          },
-          (error: any) => {
-            console.error('Error updating profile:', error);
-            this.showError('Error updating profile.');
-          }
-        );
+      const formData = new FormData();
+  
+      formData.append('email', this.currentUser.email);
+      formData.append('phoneNumber', this.profileForm.value.phoneNumber);
+      formData.append('address', this.profileForm.value.address);
+      
+      // @@ Check images if they exist
+      if (this.selectedProfileImage) {
+        formData.append('profileImage', this.selectedProfileImage, this.selectedProfileImage.name);
+      }
+      if (this.selectedIdFile) {
+        formData.append('idFile', this.selectedIdFile, this.selectedIdFile.name);
+      }
+      if (this.selectedVisaFile) {
+        formData.append('visaFile', this.selectedVisaFile, this.selectedVisaFile.name);
+      }
+  
+      this.authService.updateUserProfile(this.userId, formData).subscribe(
+        (response: any) => {
+          console.log('Profile updated successfully:', response);
+          this.showSuccess();
+          this.loadUserProfile(); // @@ Refresh profile data after update
+        },
+        (error: any) => {
+          console.error('Error updating profile:', error);
+          this.showError('Error updating profile.');
+        }
+      );
     }
   }
+  
   getUserProfile(): void {
     this.authService.getUserProfile(this.userId).subscribe(
       (profile: any) => {
         this.currentUser = profile;
-        this.userPhotoUrl = profile.photoUrl;
+        this.userProfileImage = profile.photoUrl;
+        this.userVisaFile = profile.photoUrl;
+        this.userIdFile = profile.photoUrl;
+
       },
       (error: any) => {
         console.error('Error fetching user profile:', error);

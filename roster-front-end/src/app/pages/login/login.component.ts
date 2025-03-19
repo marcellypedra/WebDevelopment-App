@@ -19,6 +19,7 @@ interface LoginForm {
 export class LoginComponent {
   loginForm!: FormGroup<LoginForm>;
   hidePassword = true;
+  disableButton = true;
 
   constructor(
     private router: Router,
@@ -33,6 +34,9 @@ export class LoginComponent {
       ]),
       name: new FormControl(''),
     });
+    this.loginForm.valueChanges.subscribe(() => {
+      this.disableButton = !this.loginForm.valid;
+    });
   }
   submit() {
     if (this.loginForm.valid) {
@@ -41,9 +45,8 @@ export class LoginComponent {
         .subscribe({
           next: (response) => {
             console.log('Login Response:', response);
-            this.showSuccess(
-              `Welcome back, ${response.name}! \n Please keep your information up to date.`
-            );
+
+            this.showSuccess( `Welcome back, ${response.user.name}!` );
 
             this.router.navigate(['/profile']);
           },
@@ -77,7 +80,7 @@ export class LoginComponent {
     this.router.navigate(['profile']);
   }
   resetPassword(email: string) {
-    // TODO :  password reset
+    //@@ TODO :  password reset
     console.log('Password reset requested for:', email);
     this.showSuccess('Password reset email sent. Please check your inbox.');
     this.closeModal();

@@ -1,34 +1,41 @@
 import express from 'express';
-import { getUsers, deleteUserById, getUserById, getUserByEmail } from '../db/users'
+import { AuthenticatedRequest } from '../middlewares/userPermissions';
+import { UserModel, getUsers, getUserById, deleteUserById } from '../db/users'
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+const convertToBase64 = (image: any) =>
+    image && image.data
+        ? `data:${image.contentType};base64,${image.data.toString('base64')}`
+        : null;
 
 export const getUserProfile = async (req: express.Request, res: express.Response) => {
-    console.log("@@ getUserProfile called");
-
+    console.log("@@ getUserProfile called")
     console.log("Request params:", req.params); 
-    try {
-        const { id } = req.params;
-        const user = await getUserById(id);
-        console.log("User retrieved:", user);
 
+    const { id } = req.params;
+    
+    if (!id || id === "undefined") {
+        console.log("Invalid or missing ID in request!");
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    try {
+        const user = await getUserById(id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const userObject = user.toObject();
-        let profileImage = null;
-
-        if (userObject.profileImage && Buffer.isBuffer(userObject.profileImage.data)) {
-            profileImage = 
-            `data:${userObject.profileImage.contentType};base64,${userObject.profileImage.data.toString('base64')}`;
-        }               
-
-        // Return the user object with the base64 encoded image
-        return res.status(200).json({
-            ...userObject,
-            profileImage
+        console.log("User retrieved:", user.id);
+        res.status(200).json({
+            ...user.toObject(),
+            profileImage: convertToBase64(user.profileImage),
+            idFile: convertToBase64(user.idFile),
+            visaFile: convertToBase64(user.visaFile)
         });
     } catch (error) {
-        console.error("Error in getUserProfile function:", error);
+        console.error("Error in getUserProfile:", error);
         return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
@@ -45,68 +52,90 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
     }
 }
 
-export const partiallyUpdateUser = async (req: express.Request, res: express.Response) => {
-    console.log('@@ partiallyUpdateUser called');
+export const updateUser = async (req: AuthenticatedRequest, res: express.Response) => {
+    console.log("@@ updateUser called");
+    console.log("Headers:", req.headers);
     console.log("Raw request body:", req.body);
-    console.log("Raw request file:", req.file ? req.file.originalname : "No file uploaded");
+    if (!req.user) { return res.status(401).json({ message: "Unauthorized request" }); }
 
+    const userId = req.params.id;     // @@ Get user ID from request params 
+
+    const user = await getUserById(userId);  // @@ Get user ID from database
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let userData;
     try {
-        const { id } = req.params;
-        const { email, phoneNumber, password, address } = req.body;
-        
-        console.log("Request body:", req.body);
-
-        if (Object.keys(req.body).length === 0) {
-            return res.status(400).json({ message: "No update fields provided" });
-        }
-        
-        const user = await getUserById(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        if (email) user.email = email;
-        if (phoneNumber) user.phoneNumber = phoneNumber;
-        if (password) user.authentication.password = password; 
-        if (address) user.address = address;
-
-        await user.save();
-        return res.status(200).json({ message: "User updated successfully", user });
+        userData = req.body.data ? JSON.parse(req.body.data) : req.body;
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+        return res.status(400).json({ message: "Invalid JSON format in request body" });
     }
-}
 
-export const updateUser = async (req: express.Request, res: express.Response) => {
-    console.log('@@ updateUser called');
-    console.log("Raw request body:", req.body);
-    console.log("Raw request file:", req.file ? req.file.originalname : "No file uploaded");
+    // @@ Get new values from request body
+    const { name, phoneNumber, address } = req.body;
+    user.name = name || user.name;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.address = address || user.address;
 
-    try {
-        const { email, name, phoneNumber, address } = req.body;
-        if (!email) return res.status(400).json({ message: "Email is required for update" });
+    if (req.files) {
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-        const user = await getUserByEmail(email);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        user.name = name || user.name;
-        user.phoneNumber = phoneNumber || user.phoneNumber;
-        user.address = address || user.address;
-
-        if (req.file) {
-            user.profileImage = { data: Buffer.from(req.file.buffer), contentType: req.file.mimetype };
+        if (files['profileImage'] && files['profileImage'].length > 0) {
+            user.profileImage = {
+                data: files['profileImage'][0].buffer,
+                contentType: files['profileImage'][0].mimetype,
+            };
         }
-
-        await user.save();
-        return res.status(200).json({ message: "User updated successfully", user });
-
-    } catch (error) {
-        console.error("Error updating user:", error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        if (files['idFile'] && files['idFile'].length > 0) {
+            user.idFile = {
+                data: files['idFile'][0].buffer,
+                contentType: files['idFile'][0].mimetype,
+            };
+        }
+        if (files['visaFile'] && files['visaFile'].length > 0) {
+            user.visaFile = {
+                data: files['visaFile'][0].buffer,
+                contentType: files['visaFile'][0].mimetype,
+            };
+        }
     }
+    
+    //@@ Save updated user
+    await user.save();        
+    const updatedUser = user.toObject();
+
+    return res.status(200).json({
+        message: "User updated successfully",
+        user: {
+            ...updatedUser,
+            profileImage: convertToBase64(updatedUser.profileImage),
+            idFile: convertToBase64(updatedUser.idFile),
+            visaFile: convertToBase64(updatedUser.visaFile)
+        }
+    });
 };
 
+export const searchUsers = async (req: express.Request, res: express.Response) => {
+    try {
+        const search = req.query.search || req.query.search;
+        console.log("Searching.. : ",search);
+
+        if (!search) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        const users = await UserModel.find({
+            $or: [
+                { name: { $regex: search, $options: "i" } }, 
+                { email: { $regex: search, $options: "i" } },
+            ]
+        });
+
+        res.status(200).json({ users });
+    } catch (error) {
+        console.error("Error searching users:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 export const deleteUser = async (req: express.Request, res: express.Response) => {
     console.log("@@ deleteUser called");    

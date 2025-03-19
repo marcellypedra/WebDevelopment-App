@@ -18,4 +18,8 @@ export class LayoutComponent {
   
   submit(){ this.onSubmit.emit(); }
   navigate(){ this.onNavigate.emit(); }
+
+  handleImageError(event: Event) {
+    (event.target as HTMLImageElement).src = '/assets/logo/logo.png'; 
+  }
 }

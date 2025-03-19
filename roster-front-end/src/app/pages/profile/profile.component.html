@@ -1,11 +1,8 @@
 <app-layout
   title="Hi {{ currentUser?.name }}!"
-  primaryBtnText="Update Profile"
-  [disablePrimaryBtn]="!profileForm.valid"
+  [primaryBtnText]="'Save'" 
   (submit)="updateProfile()"
-  [userPhoto]="userPhotoUrl"
-  [src]="currentUser?.profileImage || '/assets/icons/user.png'" 
-  alt="User Photo"
+  [userPhoto]="userProfileImage"
 >
 
 <form [formGroup]="profileForm" class="profile-form-container">
@@ -21,10 +18,6 @@
       <p><b>Email:</b> {{ currentUser?.email }}</p>
       <p><b>Address:</b> {{ currentUser?.address }}</p>
       
-      <!--
-        <app-input formControlName="name" inputName="name" type="text" label="Your name" maxlength="50" [disabled]="true"> <input [value]="profileForm.get('name')?.value" /></app-input>
-      -->
-
     </div>
 
     <!-- Personal Information -->
@@ -42,15 +35,36 @@
         <img class="icon" src="/assets/icons/address.png"/>
       </app-input>
     </div>
+
+
     <div class="form-section role-upload-section">
       <div class="file-upload">
         <h3>Upload Documents</h3>
+        
+        <div class="file-upload">
+          <label for="profileImage">Upload a new profile picture</label>
+          <input type="file" id="profileImage" (change)="onFileSelect($event, 'profile')" accept="image/*">
+          <div>
+            <span>Actual Profile Picture</span>
+            <img *ngIf="userProfileImage" [src]="userProfileImage" class="preview-image"/>
+          </div>
+        </div>
+
         <label for="idFile">Do you need to update your ID?</label>
-        <input type="file" id="idFile" (change)="onFileSelect($event, 'idFile')">
+        <input type="file" id="idFile" (change)="onFileSelect($event, 'id')" accept="image/*">
+        <div>
+          <span>Actual ID Picture</span>
+          <img *ngIf="userIdFile" [src]="userIdFile" class="preview-image"/>
+          </div>
       </div>
+
       <div class="file-upload">
         <label for="visaFile">Do you need to update your visa status?</label>
-        <input type="file" id="visaFile" (change)="onFileSelect($event, 'visaFile')">
+        <input type="file" id="visaFile" (change)="onFileSelect($event, 'visa')" accept="image/*">
+        <div>
+          <span>Actual Visa Picture</span>
+          <img *ngIf="userVisaFile" [src]="userVisaFile" class="preview-image"/>
+          </div>
       </div>
       
     </div>

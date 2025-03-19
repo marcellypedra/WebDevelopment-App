@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface User extends Document {
     name: string;
@@ -62,6 +62,7 @@ const UserSchema = new mongoose.Schema({
 export const UserModel = mongoose.model<UserDocument>('User', UserSchema);
 
 export const getUsers = () => UserModel.find();
+export const getUserByName = (name: string) => UserModel.findOne({ name });
 export const getUserByEmail = (email: string) => UserModel.findOne({ email });
 export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne({ 'authentication.sessionToken': sessionToken });
 export const getUserById = async (id: string) => {
@@ -72,5 +73,3 @@ export const createUser = (values: Record<string, any>) => new UserModel(values)
     .save().then((user) => user.toObject());
 export const deleteUserById = (id: string) => UserModel.findOneAndDelete({ _id: id});
 export const updateUserById = (id: string, values: Record<string, any>) => UserModel.findByIdAndUpdate(id, values);
-//export const updateUserById = (id: string, values: Record<string, any>) => UserModel.findByIdAndUpdate(id, values, { new: true }).lean().exec();
-

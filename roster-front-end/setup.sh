@@ -34,25 +34,25 @@ echo "@@ Created src/styles/variables.scss"
 echo "========================================"
 echo "@@ 🔧 Creating components..."
 echo "========================================"
-ng g c app/components/layout --skip-tests=true --style=scss
-ng g c app/components/input --skip-tests=true --style=scss
-ng g c components/password --skip-tests=true --style=scss
+ng g c components/layout  --style=scss
+ng g c components/input  --style=scss
+ng g c components/password  --style=scss
 
 # Generate pages
 echo "========================================"
 echo "@@ 🔧 Creating pages..."
 echo "========================================"
-ng g c app/pages/dashboard --skip-tests=true --style=scss
-ng g c app/pages/login --skip-tests=true --style=scss
-ng g c app/pages/profile --skip-tests=true --style=scss
-ng g c app/pages/register --skip-tests=true --style=scss
-ng g c app/pages/users --skip-tests=true --style=scss
+ng g c pages/dashboard  --style=scss
+ng g c pages/login  --style=scss
+ng g c pages/profile  --style=scss
+ng g c pages/register  --style=scss
+ng g c pages/users  --style=scss
 
 # Generate services
 echo "========================================"
 echo "@@ 🔧 Creating services..."
 echo "========================================"
-ng g s app/services/auth --skip-tests=true
+ng g s services/auth 
 
 # Convert global styles file to SCSS
 if [ -f "src/styles.css" ]; then

@@ -1,10 +1,8 @@
 <app-layout
     title="Login into your account"
     primaryBtnText="Log in"
-    secondaryBtnText="Submit"
+    [disablePrimaryBtn]="disableButton"
     (submit)="submit()"
-    (navigate)="navigate()"
-    [disablePrimaryBtn]="!loginForm.valid"
 >
     <form [formGroup]="loginForm" (ngSubmit)="submit()">
         <app-input
@@ -27,15 +25,18 @@
                 {{ hidePassword ? 'visibility_off' : 'visibility' }}
             </mat-icon>
         </app-input>
+
         <span class="forgot-password" (click)="forgotPassword()">Forgot password?</span>
+
+        <!-- Modal for password reset -->
         <div *ngIf="isModalVisible" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Forgot Password</h2>
-            <p>Enter your email address to reset your password.</p>
-            <input type="email" #resetEmail placeholder="Email">
-            <button (click)="resetPassword(resetEmail.value)">Reset Password</button>
-            <button (click)="closeModal()">Cancel</button>
-        </div>
+            <div class="modal-content">
+                <h2>Forgot Password</h2>
+                <p>Enter your email address to reset your password.</p>
+                <input type="email" #resetEmail placeholder="Email">
+                <button (click)="resetPassword(resetEmail.value)">Reset Password</button>
+                <button (click)="closeModal()">Cancel</button>
+            </div>
         </div>
           
     </form>

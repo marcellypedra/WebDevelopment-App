@@ -2,9 +2,9 @@
 
 .grid-container {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr; /* Adjust fractions as needed */
-  gap: 20px; /* Spacing between columns */
-  max-width: 1200px; /* Adjust as needed */
+  grid-template-columns: 1fr 1.5fr 1.5fr; 
+  gap: 20px; 
+  max-width: 1200px; 
   margin: 20px auto;
   padding: 20px;
   background: #fff;

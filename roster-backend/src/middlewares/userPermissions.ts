@@ -1,60 +1,76 @@
-import express from 'express';
-import { get, merge } from 'lodash';
-import { getUserBySessionToken } from '../db/users';
+import express, { Request, Response, NextFunction } from 'express';
+import { get } from 'lodash';
+import { verifyToken } from "../helpers/generateJWT";
+import jwt from 'jsonwebtoken';
 
-interface Identity {
+export interface Identity {
   roleType: string;
-  _id: { toString: () => string };
+  _id: string;
+}
+export interface AuthenticatedRequest extends Request {
+  user?: Identity;
 }
 
-export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log("@@ isAuthenticated called");
+export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const sessionToken = req.cookies['ROSTER-AUTH'];
-    console.log('Session Token from Cookie:', sessionToken);
-
-    if (!sessionToken) {
-      console.log('No session token found!');
-      return res.sendStatus(403);
-    }
-
-    const user = await getUserBySessionToken(sessionToken);
-    if (!user) {
-      console.log('No user found for this session token!');
-      return res.sendStatus(403);
-    }
-
-    console.log('Authenticated User:', user);
-    merge(req, { identity: user as Identity });
-
-    return next();
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+      (req as any).user = decoded; // Temporarily assigning to bypass TS error
+      next();
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+      return res.status(403).json({ message: "Forbidden" });
   }
 };
 
-export const isManager = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log("@@ isManager middleware called");
+export const authenticateUser = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {  
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
   try {
-    const identity = get(req, 'identity') as Identity;
-    console.log("@@ Identity in isManager:", identity);
-
-    if (!identity) return res.status(403).json({ message: '!! Unauthorized !!' });
-    console.log("@@ Role type in isManager:", identity.roleType);
-
-    if (identity.roleType !== 'Manager') {
-      return res.status(403).json({ message: '!! You do not have permission to access this resource !!' });
+    const decoded = verifyToken(token);
+    if (!decoded) {
+        return res.status(403).json({ message: "!! Unauthorized !!" });
     }
-    console.log("User is a Manager >>>");
+
+    req.user = { _id: decoded._id, roleType: decoded.roleType };
     next();
   } catch (error) {
-    console.error("Error in isManager middleware:", error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(403).json({ message: "Invalid token" });
   }
 };
 
+export const isManager = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+      const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // Adjust based on how token is sent
+      if (!token) {
+          return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as Identity;
+      console.log("@@ Identity in isManager:", decoded);
+
+      if (!decoded._id) {
+          return res.status(403).json({ message: "Invalid token: missing _id" });
+      }
+
+      if (decoded.roleType !== 'Manager') {
+          return res.status(403).json({ message: "Access denied: Not a Manager" });
+      }
+
+      req.user = decoded; // ✅ Now TypeScript recognizes req.user
+      next();
+  } catch (error) {
+      console.error("Error in isManager middleware:", error);
+      res.status(401).json({ message: "Unauthorized" });
+  }
+};
+/*
 export const canUpdateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log("canUpdateUser middleware called");
   try {
@@ -76,4 +92,4 @@ export const canUpdateUser = async (req: express.Request, res: express.Response,
     console.error("Error in canUpdateUser middleware:", error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+};*/
