@@ -1,73 +1,72 @@
 #!/bin/bash
 
-echo "========================================"
-echo "@@ 🔧 Starting Frontend Setup Script..."
-echo "========================================"
+echo "@@ Starting setup script..."
 
-# Create assets directories
-echo "========================================"
-echo "@@ 🔧 Creating assets directories..."
-echo "========================================"
-mkdir -p src/assets/logo src/assets/icons src/assets/img
-
-# Create types directory and add a type definition
-echo "========================================"
-echo "@@ 🔧 Creating types directory..."
-echo "========================================"
-mkdir -p src/app/types
-echo -e 'export type UserResponse = { \n     token: string, \n     name: string \n }' > src/app/types/login-response.type.ts
-
-# Create styles directory and add variables.scss
-echo "========================================"
-echo "@@ 🔧 Creating styles directory..."
-echo "========================================"
-mkdir -p src/styles
-cat > src/styles/variables.scss << EOL
-$primary-color: #168777; // Primary color
-$secondary-color: #0BCEB2; // Secondary color
-$title-color: #000000; // Title color
-$color2: #2D4356; // Additional color
-EOL
-echo "@@ Created src/styles/variables.scss"
-
-# Generate components
-echo "========================================"
-echo "@@ 🔧 Creating components..."
-echo "========================================"
-ng g c components/layout  --style=scss
-ng g c components/input  --style=scss
-ng g c components/password  --style=scss
-
-# Generate pages
-echo "========================================"
-echo "@@ 🔧 Creating pages..."
-echo "========================================"
-ng g c pages/dashboard  --style=scss
-ng g c pages/login  --style=scss
-ng g c pages/profile  --style=scss
-ng g c pages/register  --style=scss
-ng g c pages/users  --style=scss
-
-# Generate services
-echo "========================================"
-echo "@@ 🔧 Creating services..."
-echo "========================================"
-ng g s services/auth 
-
-# Convert global styles file to SCSS
-if [ -f "src/styles.css" ]; then
-    echo "@@ Converting global styles.css to styles.scss..."
-    mv src/styles.css src/styles.scss
+# Install Angular CLI globally if not installed
+if ! command -v ng &> /dev/null; then
+    echo "@@ Angular CLI is required. Installing..."
+    sudo npm install -g @angular/cli
 else
-    echo "@@ ⚠️ WARNING: Global styles.css not found!"
+    echo "@@ Angular CLI is already installed."
 fi
 
-# List all files in the src directory for verification
-echo "========================================"
-echo "@@ 🔧 Listing all files in src ..."
-ls -R src
+# Check if package.json exists
+if [ ! -f package.json ]; then
+    echo "@@ ERROR: Angular project not initialized!"
+    exit 1
+else
+    echo "@@ Angular project detected."
+fi
 
-# Completion message
-echo "========================================"
-echo "@@ ✅ Frontend Setup Script Execution Completed!"
-echo "========================================"
+# Install frontend dependencies
+echo "@@ Installing frontend dependencies..."
+npm install
+
+# Install required packages that might be missing
+echo "@@ Installing missing dependencies..."
+npm install typescript @angular-devkit/build-angular --save-dev
+
+# Install Bootstrap if not installed
+if ! npm list bootstrap --depth=0 &> /dev/null; then
+    echo "@@ Installing Bootstrap..."
+    npm install bootstrap --save
+else
+    echo "@@ Bootstrap is already installed."
+fi
+
+# Install Angular Material if not installed
+if ! npm list @angular/material @angular/cdk --depth=0 &> /dev/null; then
+    echo "@@ Installing Angular Material..."
+    ng add @angular/material @angular/cdk --defaults
+else
+    echo "@@ Angular Material is already installed."
+fi
+
+# Check and update angular.json if necessary
+echo "@@ Checking angular.json for Bootstrap setup..."
+
+# Add Bootstrap CSS and JS to angular.json if not already present
+if ! grep -q "node_modules/bootstrap/dist/css/bootstrap.min.css" src/angular.json; then
+    echo "@@ Adding Bootstrap CSS to angular.json..."
+    jq '.projects["roster-management-app"].architect.build.options.styles += ["node_modules/bootstrap/dist/css/bootstrap.min.css"]' src/angular.json > tmp.json && mv tmp.json src/angular.json
+fi
+
+if ! grep -q "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" src/angular.json; then
+    echo "@@ Adding Bootstrap JS to angular.json..."
+    jq '.projects["roster-management-app"].architect.build.options.scripts += ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]' src/angular.json > tmp.json && mv tmp.json src/angular.json
+fi
+
+echo "@@ Environment setup complete."
+
+# Check if start.sh exists before running it
+if [ -f "./start.sh" ]; then
+    echo "@@ Running start.sh script..."
+    chmod +x start.sh
+    ./start.sh
+else
+    echo "@@ WARNING: start.sh script not found. Skipping."
+fi
+
+# Start Angular application
+echo "@@ Running Angular..."
+ng serve

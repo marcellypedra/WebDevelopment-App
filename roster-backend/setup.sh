@@ -71,9 +71,10 @@ cat > package.json << EOL
 }
 EOL
 
+npm init -y
 # Install dependencies from package.json
 echo "@@ Installing dependencies..."
-npm install
+npm install -y
 
 if [ $? -ne 0 ]; then
     echo "@@ ERROR: Failed to install dependencies!"
@@ -82,28 +83,13 @@ fi
 
 echo "@@ Dependencies installed successfully."
 
-# Compile TypeScript files if tsconfig.json exists
-if [ -f "tsconfig.json" ]; then
-    echo "@@ Compiling TypeScript files..."
-    npx tsc
-
-    if [ $? -ne 0 ]; then
-        echo "@@ ERROR: TypeScript compilation failed!"
-        exit 1
-    fi
-
-    echo "@@ TypeScript compilation complete."
-else
-    echo "@@ WARNING: tsconfig.json not found! Skipping TypeScript compilation."
-fi
-
 # Generate secure JWT secret key
 JWT_SECRET=$(openssl rand -base64 32)
 JWT_REFRESH_SECRET=$(openssl rand -base64 32)
 
-# Check and create .env file if not exists
+# Check if .env exists
 if [ ! -f ".env" ]; then
-    echo "@@ Creating .env file with secure JWT_SECRET..."
+    echo "@@ .env file not found. Creating .env file with secure JWT_SECRET..."
     cat > .env << EOL
 PORT=5000
 
@@ -111,11 +97,25 @@ JWT_SECRET="$JWT_SECRET"
 JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET"
 
 ATLAS_URI="mongodb+srv://<USER_ID>:<PASSWORD>@cluster0.tki7t.mongodb.net/<DATA_BASE>"
-
-
 EOL
+    echo "@@ .env file created with JWT secrets."
 else
-    echo "@@ .env file already exists."
+    echo "@@ .env file already exists. Generating JWT secrets and appending..."
+
+    # Check if JWT_SECRET already exists in .env, if not, append them
+    if ! grep -q "JWT_SECRET=" .env; then
+        echo "JWT_SECRET=\"$JWT_SECRET\"" >> .env
+        echo "@@ JWT_SECRET added to .env"
+    else
+        echo "@@ JWT_SECRET already exists in .env"
+    fi
+
+    if ! grep -q "JWT_REFRESH_SECRET=" .env; then
+        echo "JWT_REFRESH_SECRET=\"$JWT_REFRESH_SECRET\"" >> .env
+        echo "@@ JWT_REFRESH_SECRET added to .env"
+    else
+        echo "@@ JWT_REFRESH_SECRET already exists in .env"
+    fi
 fi
 
 # Start Backend application using nodemon if src/server.ts exists
