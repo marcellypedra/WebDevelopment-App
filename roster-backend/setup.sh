@@ -33,7 +33,7 @@ echo "@@ Cleaning up old dependencies..."
 rm -f package-lock.json
 rm -rf node_modules
 
-# Create or update package.json with necessary dependencies and devDependencies
+# Create or update package.json
 echo "@@ Updating package.json..."
 cat > package.json << EOL
 {
@@ -49,10 +49,10 @@ cat > package.json << EOL
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.17",
+    "@types/express": "^4.17.14",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/lodash": "^4.14.202",
-    "@types/mongoose": "^5.11.97",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.11.24",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
@@ -63,8 +63,10 @@ cat > package.json << EOL
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-    "mongoose": "^8.2.0"
+    "mongoose": "^8.2.0",
+    "multer": "^1.4.5-lts.2"
   }
 }
 EOL
@@ -73,7 +75,6 @@ EOL
 echo "@@ Installing dependencies..."
 npm install
 
-# Check if npm install was successful
 if [ $? -ne 0 ]; then
     echo "@@ ERROR: Failed to install dependencies!"
     exit 1
@@ -86,7 +87,6 @@ if [ -f "tsconfig.json" ]; then
     echo "@@ Compiling TypeScript files..."
     npx tsc
 
-    # Check if compilation was successful
     if [ $? -ne 0 ]; then
         echo "@@ ERROR: TypeScript compilation failed!"
         exit 1
@@ -97,7 +97,28 @@ else
     echo "@@ WARNING: tsconfig.json not found! Skipping TypeScript compilation."
 fi
 
-# Start Backend application using nodemon if src/server.ts exists, otherwise show error.
+# Generate secure JWT secret key
+JWT_SECRET=$(openssl rand -base64 32)
+JWT_REFRESH_SECRET=$(openssl rand -base64 32)
+
+# Check and create .env file if not exists
+if [ ! -f ".env" ]; then
+    echo "@@ Creating .env file with secure JWT_SECRET..."
+    cat > .env << EOL
+PORT=5000
+
+JWT_SECRET="$JWT_SECRET"
+JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET"
+
+ATLAS_URI="mongodb+srv://<USER_ID>:<PASSWORD>@cluster0.tki7t.mongodb.net/<DATA_BASE>"
+
+
+EOL
+else
+    echo "@@ .env file already exists."
+fi
+
+# Start Backend application using nodemon if src/server.ts exists
 if [ -f "src/server.ts" ]; then
     echo "@@ Running Backend with Nodemon..."
     nodemon src/server.ts
