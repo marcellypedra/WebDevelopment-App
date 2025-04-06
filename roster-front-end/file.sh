@@ -186,6 +186,8 @@ fi
 
 echo "@@ Environment setup complete."
 
+clear 
+
 # Start Angular application
 echo "@@ Running Angular..."
 ng serve

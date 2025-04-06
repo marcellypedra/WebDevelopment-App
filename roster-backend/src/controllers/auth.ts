@@ -1,5 +1,5 @@
 import express from "express";
-import { UserModel, createUser, getUserByEmail } from "../db/users";
+import { UserModel, AuthModel, createUser, getUserByEmail } from "../db/users";
 import { generateToken, generateRefreshToken, verifyToken } from "../helpers/generateJWT";
 import { random, authentication } from "../helpers/encryptedPassword";
 
@@ -11,8 +11,6 @@ export const login = async (req: express.Request, res: express.Response) => {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        //const user = await getUserByEmail(email).select('authentication.salt authentication.password name email phoneNumber roleType DOB address nationality visaExpiryDate idNumber profileImage');
-        
         const user = await getUserByEmail(email);
         if (!user) { 
             return res.status(404).json({ message: "User not found" }); 
@@ -29,8 +27,25 @@ export const login = async (req: express.Request, res: express.Response) => {
         const refreshToken = generateRefreshToken(user._id.toString());
 
         // Save refresh token in the database or HTTP-only cookie
-        user.authentication.sessionToken = refreshToken;
-        await user.save();
+        //user.authentication.sessionToken = refreshToken;
+        //await user.save();
+
+        // Find or create the auth record for the user
+        let authRecord = await AuthModel.findOne({ userId: user._id });
+
+        if (!authRecord) {
+        // Create new AuthModel if one doesnt exist yet
+        authRecord = new AuthModel({
+            userId: user._id,
+            password: user.authentication.password,
+            salt: user.authentication.salt,
+            sessionToken: refreshToken,
+        });
+        } else {
+        authRecord.sessionToken = refreshToken;
+        }
+
+        await authRecord.save();
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,

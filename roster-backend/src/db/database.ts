@@ -19,8 +19,7 @@ async function applySchemaValidation(db: Connection) {
     $jsonSchema: {
       bsonType: "object",
       required: [
-        "name", "phoneNumber", "email", "address", "DOB", 
-        "nationality", "idNumber", //profileImage, idFile
+        "name", "phoneNumber", "email", "address", "DOB", "nationality", "idNumber"
       ],
       additionalProperties: false,
       properties: {

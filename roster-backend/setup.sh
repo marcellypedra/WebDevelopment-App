@@ -125,5 +125,6 @@ if [ -f "src/server.ts" ]; then
 else
     echo "@@ ERROR: src/server.ts not found! Ensure your backend entry file exists."
 fi
-
+clear
 echo "@@ Setup script complete."
+nodemon

@@ -2,9 +2,9 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
 import { LayoutComponent } from './components/layout/layout.component';
 import { InputComponent } from './components/input/input.component';
 import { PasswordComponent } from './components/password/password.component';
@@ -14,9 +14,11 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HeaderComponent } from './header/header.component';
 import { RosterComponent } from './roster/roster.component';
 import { FooterComponent } from './footer/footer.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { UsersComponent } from './pages/users/users.component';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskModule } from 'ngx-mask';
-
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,9 +30,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService } from './services/auth-service.service';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { UsersComponent } from './pages/users/users.component';
-import { AboutComponent } from './pages/about/about.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,8 +45,7 @@ import { AboutComponent } from './pages/about/about.component';
     ProfileComponent,
     UsersComponent,
     PasswordComponent,
-    UsersComponent,
-    AboutComponent
+    UsersComponent
   ],
   imports: [
     FormsModule,

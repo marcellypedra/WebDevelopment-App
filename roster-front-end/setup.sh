@@ -66,7 +66,7 @@ if [ -f "./start.sh" ]; then
 else
     echo "@@ WARNING: start.sh script not found. Skipping."
 fi
-
+clear
 # Start Angular application
 echo "@@ Running Angular..."
 ng serve

@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema({
     address: { type: String, required: true },
     DOB: { type: Date, required: true },
     nationality: { type: String, required: true },
-    visaExpiryDate: { type: Date },
+    visaExpiryDate: { type: Date, required: false },
     idNumber: { type: String, required: true, unique: true },
     roleType: { type: String, required: true, enum: ['BarStaff', 'FloorStaff', 'Manager'] },
     profileImage: {
@@ -55,10 +55,18 @@ const UserSchema = new mongoose.Schema({
     authentication: {
         salt: { type: String, required: true },
         password: { type: String, required: true },
-        sessionToken: { type: String }
+        sessionToken: { type: String, required: true }
     }
 });
-
+const AuthSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    password: { type: String, required: true },
+    salt: { type: String, required: true },
+    sessionToken: { type: String }, // Store session tokens here
+});
+  
+export const AuthModel = mongoose.model('Auth', AuthSchema);
+  
 export const UserModel = mongoose.model<UserDocument>('User', UserSchema);
 
 export const getUsers = () => UserModel.find();

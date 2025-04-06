@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { UserResponse } from '../types/user-response.type';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
@@ -31,7 +32,7 @@ export class AuthService {
     sessionStorage.removeItem('ROSTER-AUTH');
     sessionStorage.removeItem('refreshToken');
     this.router.navigate(['/login']).then(() => {
-      window.location.reload(); // Ensures the user is fully logged out
+      window.location.reload(); 
     });
   }
    
