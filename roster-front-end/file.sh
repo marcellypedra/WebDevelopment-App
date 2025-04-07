@@ -39,12 +39,15 @@ if [ ! -f package.json ]; then
     "@angular/router": "^15.2.10",
     "@fullcalendar/angular": "^6.1.17",
     "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
     "bootstrap": "^5.3.5",
     "jwt-decode": "^4.0.0",
+    "luxon": "^3.6.1",
     "ngx-mask": "^14.3.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.11",
+    "@types/luxon": "^3.6.2",
     "@types/node": "^22.14.0",
     "typescript": "^4.9.5"
   }
