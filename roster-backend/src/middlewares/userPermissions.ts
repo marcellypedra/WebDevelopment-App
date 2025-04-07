@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { get } from 'lodash';
 import { verifyToken } from "../helpers/generateJWT";
 import jwt from 'jsonwebtoken';
 
@@ -63,7 +62,7 @@ export const isManager = (req: AuthenticatedRequest, res: Response, next: NextFu
           return res.status(403).json({ message: "Access denied: Not a Manager" });
       }
 
-      req.user = decoded; // ✅ Now TypeScript recognizes req.user
+      req.user = decoded; 
       next();
   } catch (error) {
       console.error("Error in isManager middleware:", error);

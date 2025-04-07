@@ -91,12 +91,12 @@ JWT_REFRESH_SECRET=$(openssl rand -base64 32)
 if [ ! -f ".env" ]; then
     echo "@@ .env file not found. Creating .env file with secure JWT_SECRET..."
     cat > .env << EOL
-PORT=5000
+PORT=5200
 
 JWT_SECRET="$JWT_SECRET"
 JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET"
 
-ATLAS_URI="mongodb+srv://<USER_ID>:<PASSWORD>@cluster0.tki7t.mongodb.net/<DATA_BASE>"
+ATLAS_URI="mongodb+srv://<<USER_ID>>:<<PASSWORD>>@cluster0.tki7t.mongodb.net/<<DATA_BASE>>"
 EOL
     echo "@@ .env file created with JWT secrets."
 else

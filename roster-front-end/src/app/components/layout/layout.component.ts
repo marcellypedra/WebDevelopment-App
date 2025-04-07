@@ -8,7 +8,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class LayoutComponent {
   @Input() title: string = '';
   @Input() primaryBtnText: string = '';
-  @Input() secondaryBtnText: string = '';
   @Input() disablePrimaryBtn: boolean = true;
   @Input() src: string | null = null;
   @Input() userPhoto: string | null = null;

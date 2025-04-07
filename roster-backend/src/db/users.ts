@@ -30,7 +30,7 @@ export interface User extends Document {
 }
 export interface UserDocument extends Document, User {}
 
-const UserSchema = new mongoose.Schema({
+export const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true },

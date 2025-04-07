@@ -48,7 +48,7 @@ export class LoginComponent {
 
             this.showSuccess( `Welcome back, ${response.user.name}!` );
 
-            this.router.navigate(['/profile']);
+            this.router.navigate(['/dashboard']);
           },
           error: (err) =>
             this.showError(

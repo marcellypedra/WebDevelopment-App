@@ -116,17 +116,17 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
 
 export const searchUsers = async (req: express.Request, res: express.Response) => {
     try {
-        const search = req.query.search || req.query.search;
-        console.log("Searching.. : ",search);
+        const searchQuery = req.query.searchQuery  || req.query.search;
+        console.log("Searching.. : ",searchQuery );
 
-        if (!search) {
+        if (!searchQuery ) {
             return res.status(400).json({ message: "Search query is required" });
         }
 
         const users = await UserModel.find({
             $or: [
-                { name: { $regex: search, $options: "i" } }, 
-                { email: { $regex: search, $options: "i" } },
+                { name: { $regex: searchQuery , $options: "i" } }, 
+                { email: { $regex: searchQuery , $options: "i" } },
             ]
         });
 

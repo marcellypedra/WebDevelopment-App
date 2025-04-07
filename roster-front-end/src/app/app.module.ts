@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -11,14 +11,15 @@ import { PasswordComponent } from './components/password/password.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { HeaderComponent } from './header/header.component';
-import { RosterComponent } from './roster/roster.component';
-import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { RosterComponent } from './pages/roster/roster.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { UsersComponent } from './pages/users/users.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskModule } from 'ngx-mask';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,6 +47,7 @@ import { AuthService } from './services/auth-service.service';
     UsersComponent,
     PasswordComponent,
     UsersComponent
+
   ],
   imports: [
     FormsModule,
@@ -62,9 +64,11 @@ import { AuthService } from './services/auth-service.service';
     MatOptionModule,
     HttpClientModule,
     FullCalendarModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    RouterModule,
+    MatProgressSpinnerModule
   ],
-  providers: [AuthService/*, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }*/],
-  bootstrap: [AppComponent]
+  providers: [AuthService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

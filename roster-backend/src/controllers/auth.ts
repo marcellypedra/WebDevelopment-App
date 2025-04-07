@@ -26,24 +26,18 @@ export const login = async (req: express.Request, res: express.Response) => {
         const accessToken = generateToken(user._id.toString(), user.roleType.toString());
         const refreshToken = generateRefreshToken(user._id.toString());
 
-        // Save refresh token in the database or HTTP-only cookie
-        //user.authentication.sessionToken = refreshToken;
-        //await user.save();
-
         // Find or create the auth record for the user
         let authRecord = await AuthModel.findOne({ userId: user._id });
 
         if (!authRecord) {
         // Create new AuthModel if one doesnt exist yet
-        authRecord = new AuthModel({
-            userId: user._id,
-            password: user.authentication.password,
-            salt: user.authentication.salt,
-            sessionToken: refreshToken,
-        });
-        } else {
-        authRecord.sessionToken = refreshToken;
-        }
+            authRecord = new AuthModel({
+                userId: user._id,
+                password: user.authentication.password,
+                salt: user.authentication.salt,
+                sessionToken: refreshToken,
+            });
+        } else { authRecord.sessionToken = refreshToken; }
 
         await authRecord.save();
 
@@ -53,7 +47,7 @@ export const login = async (req: express.Request, res: express.Response) => {
             sameSite: "lax", //"strict",
             path: "/" //auth/refresh-token",
         });
-        console.log("Cookies on request:", req.cookies);
+        //console.log("Cookies on request:", req.cookies);
 
         return res.status(200).json({
             message: "Login successful",
@@ -63,8 +57,9 @@ export const login = async (req: express.Request, res: express.Response) => {
     } catch (error) {
         console.error("Error during login:", error);
         return res.status(500).json({ message: 'Internal Server Error' });
-      }
+    } 
 };
+
 export const refreshToken = async (req: express.Request, res: express.Response) => {
     console.log('@@ refreshToken called');
 
@@ -96,7 +91,6 @@ export const logout = async (req: express.Request, res: express.Response) => {
     res.clearCookie("refreshToken", { path: '/' });
     return res.status(200).json({ message: "Logged out successfully" });
 };
-
 export const register = async (req: express.Request, res: express.Response) => {
     console.log('@@ Register called');
     try {

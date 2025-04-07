@@ -40,7 +40,7 @@ export class UsersComponent implements OnInit {
     }
   
     this.searchForm = this.fb.group({
-      search: ['', Validators.required]
+      searchQuery: ['', Validators.required]
     });
 
     this.loadUserProfile();
@@ -151,7 +151,7 @@ export class UsersComponent implements OnInit {
 
   searchUsers(): void {
     if (this.searchForm.valid) {
-      const query = this.searchForm.get('search')?.value;
+      const query = this.searchForm.get('searchQuery')?.value;
       this.authService.searchUsers(query).subscribe(
         (response: any) => {
           if (response && response.users) {

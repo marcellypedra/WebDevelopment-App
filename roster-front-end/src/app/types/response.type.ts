@@ -1,4 +1,4 @@
-export type UserResponse = { 
+export type UserResponse = { //ShiftResponse
     accessToken: string,  
     id: string;
     user: {
@@ -21,3 +21,23 @@ export type UserResponse = {
         visaFile?: string, 
     };
 };
+
+export interface ShiftsResponse {
+    user: User; 
+    shiftsForUser: Shift[];
+}
+
+export interface Shift {
+    _id?: string;
+    userId?: string;
+    shiftDate: string;
+    startTime: string;
+    endTime: string;
+}
+
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    roleType: string;
+}

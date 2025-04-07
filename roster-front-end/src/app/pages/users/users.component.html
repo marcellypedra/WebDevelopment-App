@@ -6,7 +6,7 @@
 <div class="grid-container">
   <div class="search-column">
     <form *ngIf="searchForm" [formGroup]="searchForm">
-      <app-input type="text" label="Search" formControlName="search" placeholder="Enter user name or email"></app-input>
+      <app-input type="text" label="Search" formControlName="searchQuery" placeholder="Enter user name or email"></app-input>
     </form>
     <button (click)="searchUsers()" [disabled]="!searchForm.valid">Search Users</button>
   </div>

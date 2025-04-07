@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
-import { UserResponse } from '../types/user-response.type';
+import { Observable, tap, map } from 'rxjs';
+import { UserResponse } from '../types/response.type';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 
@@ -127,7 +126,7 @@ export class AuthService {
       headers: { Authorization: `Bearer ${token}` }, 
       withCredentials: true,
     });
-  }  
+  } 
   
   loadUserProfile(userId: string): Observable<any> {
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
