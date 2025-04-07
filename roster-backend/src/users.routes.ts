@@ -1,7 +1,12 @@
-import * as express from "express";
-import { ObjectId } from "mongodb";
-import { collections } from "./database";
+import express from "express";
+import authenticationRouter from "./router/authentication";
+import usersRouter from "./router/users";
+import shiftsRouter from './router/shifts'
 
-export const usersRouter = express.Router();
-usersRouter.use(express.json());
+const router = express.Router();
 
+router.use('/auth', authenticationRouter);
+router.use('/users', usersRouter);
+router.use('/shifts', shiftsRouter);
+
+export default router;

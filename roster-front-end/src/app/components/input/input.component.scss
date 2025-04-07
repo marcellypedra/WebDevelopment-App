@@ -1,0 +1,51 @@
+@import "../../../styles/variables.scss";
+
+.input-wrapper {
+    color: $color2;
+    font-size: 16px;
+    text-align: start;
+    margin-top: 10px;
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: $color2;
+    }
+
+    .input-content {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        border-radius: 8px;
+        overflow: hidden;
+
+        .icon {
+            background-color: $primary-color;
+            border-radius: 0 8px 8px 0;
+            //padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                height: 20px;
+                display: block;
+            }
+        }
+
+        input {
+            border: none;
+            background-color: $secondary-color;
+            padding: 10px 0 13px 15px;
+            width: 100%;
+            color: white;
+            font-size: inherit;
+            outline: none;
+            border-radius: 8px 0 0 8px;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+    }
+}
