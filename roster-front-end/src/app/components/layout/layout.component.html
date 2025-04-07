@@ -1,0 +1,35 @@
+<main class="main">
+    <section class="form-section">
+        <img *ngIf="!userPhoto" src="/assets/logo/logo.png" alt="Logo"/>
+        <img *ngIf="userPhoto" [src]="userPhoto" alt="User Photo" class="user-photo"/>
+                
+        <h2>{{ title }}</h2>
+        <ng-content></ng-content>
+
+        <div class="btn-wrapper">
+            <button 
+                class="btn-primary" 
+                (click)="submit()"
+            >{{ primaryBtnText }}</button>
+
+            <!--
+            <div class="divider">
+                <div></div>
+                    <span>or</span>
+                <div></div>
+            </div>
+            
+            <button 
+                class="btn-secondary" 
+                (click)="navigate()"
+            >{{ secondaryBtnText }}</button>
+        -->
+        </div>
+    </section>
+<!--
+    <section class="main-section">
+        <h1>Welcome to Tempora!</h1>        
+        <img src="/assets/logo/logo.png" alt="Tempora"/>
+    </section>
+-->
+</main>

@@ -1,6 +1,10 @@
-import * as express from "express";
-import { ObjectId } from "mongodb";
-import { collections } from "./database";
+// import express from "express";
+// import authenticationRouter from "./router/authentication";
+// import usersRouter from "./router/users";
 
-export const usersRouter = express.Router();
-usersRouter.use(express.json());
+// const router = express.Router();
+
+// router.use('/auth', authenticationRouter);
+// router.use('/users', usersRouter);
+
+// export default router;

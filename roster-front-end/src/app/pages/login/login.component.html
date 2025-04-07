@@ -1,0 +1,43 @@
+<app-layout
+    title="Login into your account"
+    primaryBtnText="Log in"
+    [disablePrimaryBtn]="disableButton"
+    (submit)="submit()"
+>
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <app-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="Email"
+            placeholder="john@example.com"
+        >
+            <img src="/assets/icons/email.png" alt="Email Icon"/>
+        </app-input>
+
+        <app-input
+            formControlName="password"
+            inputName="password"
+            [type]="hidePassword ? 'password' : 'text'"
+            label="Your Password"
+        >
+            <mat-icon (click)="togglePassword()">
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+        </app-input>
+
+        <span class="forgot-password" (click)="forgotPassword()">Forgot password?</span>
+
+        <!-- Modal for password reset -->
+        <div *ngIf="isModalVisible" class="modal-overlay">
+            <div class="modal-content">
+                <h2>Forgot Password</h2>
+                <p>Enter your email address to reset your password.</p>
+                <input type="email" #resetEmail placeholder="Email">
+                <button (click)="resetPassword(resetEmail.value)">Reset Password</button>
+                <button (click)="closeModal()">Cancel</button>
+            </div>
+        </div>
+          
+    </form>
+</app-layout>

@@ -1,0 +1,89 @@
+<app-layout
+  title="Hi {{ currentUser?.name }}!"
+  [userPhoto]="userProfileImage"
+>
+
+<div class="grid-container">
+  <div class="search-column">
+    <form *ngIf="searchForm" [formGroup]="searchForm">
+      <app-input type="text" label="Search" formControlName="search" placeholder="Enter user name or email"></app-input>
+    </form>
+    <button (click)="searchUsers()" [disabled]="!searchForm.valid">Search Users</button>
+  </div>
+
+  <div class="user-list-column">
+    <div class="user-list-container" *ngIf="users && users.length > 0">
+      <h3>List of Users</h3>
+      <div *ngFor="let user of users" class="user-item" (click)="selectUser(user)">
+        <img *ngIf="user.profileImage" [src]="user.profileImage" alt="User Profile" />
+        <div>
+          <p>{{ user.name }}</p>
+          <p>Role: {{ user.roleType }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="edit-user-column">
+    <div class="edit-user" *ngIf="selectedUser">
+      <h3>Edit User</h3>
+      <form [formGroup]="editForm">
+                <!-- User Details -->
+        <app-input formControlName="name" inputName="name" label="name">
+          <img class="icon" src="/assets/icons/phone.png"/></app-input>
+        <app-input type="email" label="Email" formControlName="email" placeholder="Enter user email">
+          <img class="icon" src="/assets/icons/phone.png"/></app-input>
+        <app-input type="password" label="password" formControlName="password"></app-input>
+        <app-input formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" maxlength="14" (ngModelChange)="onPhoneNumberChange($event)" placeholder="(00) 000-0000">
+          <img class="icon" src="/assets/icons/phone.png"/></app-input>
+              
+                <!-- Personal Information -->
+        <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="DOB" inputName="DOB" InputTypes="date" label="Date of Birth">
+          <img class="icon" src="/assets/icons/agenda.png"/>
+      </app-input>
+      <app-input formControlName="nationality" inputName="nationality" type="text" label="Nationality">
+          <img class="icon" src="/assets/icons/nationality.png"/>
+      </app-input>
+      <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
+          <img class="icon" src="/assets/icons/address.png"/>
+      </app-input>
+      <app-input formControlName="idNumber" inputName="idNumber" type="text" label="ID Number" maxlength="15">
+          <img class="icon" src="/assets/icons/id.png"/>
+      </app-input>
+      <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="visaExpiryDate" inputName="visaExpiryDate" InputTypes="date" label="Visa Expiry (Optional)">
+          <img class="icon" src="/assets/icons/agenda.png"/>
+      </app-input>
+
+                <!-- Role & Upload Documents -->
+      <mat-form-field appearance="fill">
+        <mat-label>Role Type</mat-label>
+        <mat-select formControlName="roleType">
+            <mat-option value="BarStaff">Bar Staff</mat-option>
+            <mat-option value="FloorStaff">Floor Staff</mat-option>
+            <mat-option value="Manager">Manager</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="file-upload">
+          <label for="idFile">Upload <b>ID</b> File:</label>
+          <input type="file" id="idFile" (change)="onFileSelect($event, 'idFile')">
+      </div>
+
+      <div class="file-upload">
+          <label for="visaFile">Upload Visa File (Optional):</label>
+          <input type="file" id="visaFile" (change)="onFileSelect($event, 'visaFile')">
+      </div>
+
+      <div class="file-upload">
+          <label for="profileImage">Upload Profile Image:</label>
+          <input type="file" id="profileImage" (change)="onFileSelect($event, 'profileImage')">
+      </div>
+      </form>
+      <div class="btn-edit">
+        <button (click)="updateUser()">Update User</button>
+        <button (click)="deleteUser()">Delete User</button>
+      </div>
+    </div>
+  </div>
+</div>
+</app-layout>

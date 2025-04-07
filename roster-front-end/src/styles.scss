@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+html, body { height: 100%; }
+body { 
+    font-family: Roboto, 
+    "Helvetica Neue", 
+    sans-serif; 
+}
+.snack-success {
+    background-color: #4caf50; 
+    color: white;
+}
+.snack-error {
+    background-color: #f44336; 
+    color: white;
+}
+.icon {
+    height: 45px;
+    width: 40px;
+    img {
+        padding: 5px;
+        height: 40px;
+    }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
