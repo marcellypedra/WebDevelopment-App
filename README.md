@@ -12,31 +12,48 @@ Run the following command to install bootstrap-> npm install bootstrap
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.3. and  use as database MongoDB Atlas.
 
-## Environment Setup
-
-1. Make the script executable by giving it the correct permissions.
-
-   `chmod +x init.sh` 
-
-2. Run `init.sh` to install all necessary dependencies for setup the environment
-
-
-
 ## Run Backend
 
-1. Create an .env inside roster-backend with your MongoDB Atlas Credentials following the example below:
-
-ATLAS_URI= "[PASTE HERE YOUR ATLAS URI WITH YOUR CREDENTIALS]"
-
-2. Convert .ts files into .js files by running the following commands:
-
+1. Navigate to Backend folder:
    `cd roster-backend`
 
-   `npx tsc src/server.ts`
+2. Make the scripts executable by giving them the correct permissions.
 
-3. Start the backend by running the command:
+   `chmod +x setup.sh`
 
-   `node src/server.js`
+3. Run `setup.sh` to install all necessary dependencies for setup the environment
+
+4. In the .env file include your credentials where it is necessary
+
+4. Start the backend by running the command:
+
+   `nodemon src/server.ts`
+
+## Run Frontend
+
+1. Open a new terminal to run the frontend separately from the backend and run the command:
+  
+   `ng serve`
+
+BOTH ENVIRONMENTS (BACKEND AND FRONTEND) SHOULD BE RUNNING SIMULTANEOUSLY FOR THE APP PROPERLY WORKS.
+
+
+## Environment Setup Frontend (IF NECESSARY)
+
+1. Navigate to Frontend folder:
+   `cd roster-front-end`
+
+2. Make the scripts executable by giving them the correct permissions.
+
+   `chmod +x setup.sh` 
+   `chmod +x file.sh`
+
+3. Run `setup.sh` to install all necessary dependencies for setup the environment
+
+4. Try to run the frontend `ng serve`, if it doesn't work, run `file.sh` and then try again.
+
+5. Repeat steps 1 to 3 but in the roster-backend folder ( except for the `file.sh`)
+
 
 
 ## Development Angular Project

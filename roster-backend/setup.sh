@@ -96,7 +96,7 @@ PORT=5200
 JWT_SECRET="$JWT_SECRET"
 JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET"
 
-ATLAS_URI="mongodb+srv://<<USER_ID>>:<<PASSWORD>>@cluster0.tki7t.mongodb.net/<<DATA_BASE>>"
+ATLAS_URI="mongodb+srv://<<USER_ID>>:<<PASSWORD>>@cluster0.tki7t.mongodb.net/RosterApp"
 EOL
     echo "@@ .env file created with JWT secrets."
 else
