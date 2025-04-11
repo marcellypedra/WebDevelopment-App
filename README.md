@@ -12,33 +12,7 @@ Run the following command to install bootstrap-> npm install bootstrap
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.3. and  use as database MongoDB Atlas.
 
-## Run Backend
-
-1. Navigate to Backend folder:
-   `cd roster-backend`
-
-2. Make the scripts executable by giving them the correct permissions.
-
-   `chmod +x setup.sh`
-
-3. Run `setup.sh` to install all necessary dependencies for setup the environment
-
-4. In the .env file include your credentials where it is necessary
-
-4. Start the backend by running the command:
-
-   `nodemon src/server.ts`
-
-## Run Frontend
-
-1. Open a new terminal to run the frontend separately from the backend and run the command:
-  
-   `ng serve`
-
-BOTH ENVIRONMENTS (BACKEND AND FRONTEND) SHOULD BE RUNNING SIMULTANEOUSLY FOR THE APP PROPERLY WORKS.
-
-
-## Environment Setup Frontend (IF NECESSARY)
+## Environment Setup Frontend 
 
 1. Navigate to Frontend folder:
    `cd roster-front-end`
@@ -54,7 +28,24 @@ BOTH ENVIRONMENTS (BACKEND AND FRONTEND) SHOULD BE RUNNING SIMULTANEOUSLY FOR TH
 
 5. Repeat steps 1 to 3 but in the roster-backend folder ( except for the `file.sh`)
 
+## Run Backend
 
+1. Navigate to Backend folder:
+   `cd roster-backend`
+
+2. In the .env file include your credentials where it is necessary
+
+4. Start the backend by running the command:
+
+   `nodemon src/server.ts`
+
+## Run Frontend
+
+1. Open a new terminal to run the frontend separately from the backend and run the command:
+  
+   `ng serve`
+
+BOTH ENVIRONMENTS (BACKEND AND FRONTEND) SHOULD BE RUNNING SIMULTANEOUSLY FOR THE APP PROPERLY WORKS.
 
 ## Development Angular Project
 
