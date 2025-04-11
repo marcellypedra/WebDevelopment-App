@@ -105,3 +105,68 @@ export const getShiftsByDate = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const createShifts = async (req: Request, res: Response) => {
+  console.log("@@ createShifts called");
+  try {
+    const rawshiftData = req.body;
+
+    if (!Array.isArray(rawshiftData) || rawshiftData.length === 0) {
+      return res.status(400).json({ message: "Shift data must be a non-empty array" });
+    }
+     
+    console.log("Incoming shift data:", rawshiftData);
+    // Validate each shift entry
+    const shiftData = rawshiftData.map((shift: any, index: number) => {
+      const { userId, shiftDate, startTime, endTime } = shift;
+
+      if (!userId || !ObjectId.isValid(userId)) {
+        console.error(`Invalid or missing userId in shift at index ${index}`, shift);
+        throw new Error(`Invalid or missing userId in shift at index ${index}`);
+      }
+      let parsedShiftDate = new Date(shiftDate);
+      if (isNaN(parsedShiftDate.getTime())) {
+        console.error(`Invalid shiftDate in shift at index ${index}`, shift);
+        throw new Error(`Invalid shiftDate in shift at index ${index}`);
+      }
+      console.log("Parsed shift date:", parsedShiftDate);
+      if(!parsedShiftDate){
+          throw new Error(`parsedShiftDate is null`);
+      }
+
+      if (!startTime || !endTime) {
+        console.error(`Missing startTime or endTime in shift at index ${index}`, shift);
+        throw new Error(`Missing startTime or endTime in shift at index ${index}`);
+      }
+
+      return {
+        userId: new ObjectId(userId),
+        shiftDate: parsedShiftDate,
+        startTime: String(startTime),
+        endTime: String(endTime),
+      };
+    });
+
+
+    console.log("Shift payload to insert:", shiftData);
+
+    // Remove __v before insert.
+    const cleanShiftData = shiftData.map((shift)=>{
+      const {__v, ...cleanedShift} = shift as { [key: string]: any };;
+      return cleanedShift;
+  })
+
+
+    const result = await collections.Shifts?.insertMany(shiftData);
+    console.log("Shift data inserted successfully:", result);
+
+    res.status(201).json({ message: "Shifts created successfully", data: result });
+  } catch (error) {
+    console.error("Error creating shifts:", error);
+    if (error.writeErrors) {
+      console.log("Write Errors:");
+      console.log(JSON.stringify(error.writeErrors, null, 2)); // Stringify for better readability
+    }
+    res.status(500).json({ message: "Server error", error });
+  }
+};

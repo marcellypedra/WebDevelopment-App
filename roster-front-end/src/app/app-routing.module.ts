@@ -6,6 +6,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { RosterComponent } from './pages/roster/roster.component';
 import { UsersComponent } from './pages/users/users.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ShiftsComponent } from './pages/shifts/shifts.component';
 import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },
   { path: 'roster', component: RosterComponent, canActivate: [AuthGuard] },
+  {path: 'shifts', component: ShiftsComponent, canActivate:[AuthGuard]},
   { path: '**', redirectTo: '/login' }, // @@ Keep as the last.
 ];
 

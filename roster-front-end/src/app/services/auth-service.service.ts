@@ -53,7 +53,7 @@ export class AuthService {
 
     try {
       const decodedToken: any = jwtDecode(token);
-      return decodedToken.id || null; 
+      return decodedToken._id || null; 
     } catch (error) {
       console.error('Invalid token:', error);
       return null;

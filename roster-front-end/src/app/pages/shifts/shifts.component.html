@@ -1,0 +1,60 @@
+<app-layout
+    title="Create new Shift"
+    primaryBtnText="Save"
+    secondaryBtnText="Cancel"
+    (submit)="submit()"
+    (navigate)="navigate()"
+>
+    <form #shiftForm="ngForm" class="shift-form-container">
+        <!-- Shift Details -->
+        <div class="form-section">
+            <h3>Shift Week</h3>
+            <mat-form-field appearance="fill">
+                <mat-label>Shift Start Date</mat-label>
+                <input matInput [matDatepicker]="picker1" [(ngModel)]="shiftbegindate" name="shiftbegindate" placeholder="Choose a Start Date" (dateChange)="generateWeekDates()">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Shift End Date</mat-label>
+                <input matInput [matDatepicker]="picker2" [(ngModel)]="shiftenddate" name="shiftenddate" placeholder="Choose an End Date" (dateChange)="generateWeekDates()">
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <!-- Shift Table -->
+        <div class="shift-table-container" *ngIf="shiftDates.length > 0">
+            <table class="shift-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th *ngFor="let date of shiftDates">{{ date | date:'EEE, MMM d' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users; let i = index">
+                        <td>{{ users[i].name }}</td>
+                        <td *ngFor="let date of shiftDates; let j = index">
+                            <div class="time-inputs">
+                                <!-- Day Off Checkbox -->
+                                <label class="day-off-checkbox">
+                                    <input type="checkbox" [(ngModel)]="shifts[i][j].dayOff" name="dayOff-{{i}}-{{j}}">
+                                    Day Off
+                                </label>
+                                
+                                <!-- Start Time Input -->
+                                <input type="time" [(ngModel)]="shifts[i][j].start" [disabled]="shifts[i][j].dayOff" name="start-{{i}}-{{j}}">
+
+                                <!-- End Time Input -->
+                                <input type="time" [(ngModel)]="shifts[i][j].end" [disabled]="shifts[i][j].dayOff" name="end-{{i}}-{{j}}">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- <button type="submit" [disabled]="!shiftForm.valid">Submit</button> -->
+    </form>
+</app-layout>

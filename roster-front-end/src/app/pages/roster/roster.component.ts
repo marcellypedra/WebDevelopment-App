@@ -59,7 +59,7 @@ export class RosterComponent implements OnInit {
       this.isLoading = false;
       return;
     }
-
+    console.log("userID from token: ", userId);
     this.rosterService.getShiftForUser(userId).subscribe({
       next: (data) => {
         this.shifts = data;

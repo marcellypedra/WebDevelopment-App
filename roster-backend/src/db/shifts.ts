@@ -6,7 +6,8 @@ export const ShiftsSchema = new mongoose.Schema({
     shiftDate: { type: Date, required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
-});
+
+}, { versionKey: false } );
 
 export interface Shifts extends Document {
     _id: ObjectId;
@@ -14,7 +15,9 @@ export interface Shifts extends Document {
     shiftDate: Date,
     startTime: string,
     endTime: string,
-};
+    __v?: number; // Add __v as an optional number property
+  };
+
 
 export interface ShiftsResponse {
   user: User;

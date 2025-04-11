@@ -21,6 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskModule } from 'ngx-mask';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +33,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService } from './services/auth-service.service';
+import { ShiftsComponent } from './pages/shifts/shifts.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +49,8 @@ import { AuthService } from './services/auth-service.service';
     ProfileComponent,
     UsersComponent,
     PasswordComponent,
-    UsersComponent
+    UsersComponent,
+    ShiftsComponent
 
   ],
   imports: [
@@ -66,9 +70,11 @@ import { AuthService } from './services/auth-service.service';
     FullCalendarModule,
     BrowserAnimationsModule,
     RouterModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  providers: [AuthService],
+  providers: [AuthService, MatDatepickerModule,],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

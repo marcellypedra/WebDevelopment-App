@@ -37,7 +37,7 @@ export const authenticateUser = (req: AuthenticatedRequest, res: Response, next:
         return res.status(403).json({ message: "!! Unauthorized !!" });
     }
 
-    req.user = { _id: decoded._id, roleType: decoded.roleType };
+    req.user = {_id: decoded._id, roleType: decoded.roleType };
     next();
   } catch (error) {
     return res.status(403).json({ message: "Invalid token" });

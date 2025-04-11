@@ -12,11 +12,11 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
 export const generateToken = (_id: string, roleType: string) => {
-    return jwt.sign({ id: _id, roleType }, JWT_SECRET, { expiresIn: '10m' });
+    return jwt.sign({ _id: _id, roleType }, JWT_SECRET, { expiresIn: '10m' });
 };
 
 export const generateRefreshToken = (_id: string) => {
-    return jwt.sign({ id: _id }, JWT_REFRESH_SECRET, { expiresIn: '20m' }); 
+    return jwt.sign({ _id: _id }, JWT_REFRESH_SECRET, { expiresIn: '20m' }); 
 };
 
 export const verifyToken = (token: string, isRefreshToken = false) => {
