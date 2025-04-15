@@ -1,0 +1,24 @@
+name: Deploy Render Static Site
+
+on:
+  workflow_dispatch:
+    inputs:
+      serviceID:
+        type: string
+        description: 'Render Service ID (e.g., srv-abc123)'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
+
+      - name: Trigger Render Deploy
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render deploys create ${{ github.event.inputs.serviceID }} --yes
