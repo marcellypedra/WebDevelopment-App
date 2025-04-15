@@ -8,7 +8,7 @@ import { Shift } from '../types/response.type';
   providedIn: 'root',
 })
 export class ShiftService {
-  private apiUrl = 'http://localhost:5200';  // Your backend API URL
+  private apiUrl = process.env['API_URL'] || 'http://localhost:5200'; 
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  private apiUrl = 'http://localhost:5200';
+  private apiUrl = process.env['API_URL'] || 'http://localhost:5200'; 
 
   constructor(private router: Router) {}
 

@@ -7,7 +7,7 @@ import { ShiftsResponse } from '../types/response.type';
   providedIn: 'root',
 })
 export class RosterService {
-  private apiUrl = 'http://localhost:5200';
+  private apiUrl = process.env['API_URL'] || 'http://localhost:5200'; 
 
   constructor(private http: HttpClient) {}
 
