@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
+import { Observable, tap, map, BehaviorSubject } from 'rxjs';
 import { UserResponse } from '../types/response.type';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
@@ -29,10 +29,7 @@ export class AuthService {
   
   logout() {
     sessionStorage.removeItem('ROSTER-AUTH');
-    sessionStorage.removeItem('refreshToken');
-    this.router.navigate(['/login']).then(() => {
-      window.location.reload(); 
-    });
+    this.router.navigate(['/login']);
   }
    
   refreshToken(): Observable<string> {
@@ -148,6 +145,11 @@ export class AuthService {
 
   isManager(): boolean {
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
-    return sessionStorage.getItem('roleType') === 'Manager';
+    if (!token) return false;
+
+    const decoded: any = jwtDecode(token);
+    console.log('Decoded token:', decoded);
+    return decoded.roleType === 'Manager'; 
   }
+  
 }

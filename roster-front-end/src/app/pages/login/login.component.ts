@@ -46,9 +46,10 @@ export class LoginComponent {
           next: (response) => {
             console.log('Login Response:', response);
 
+            sessionStorage.setItem('ROSTER-AUTH', response.accessToken);
             this.showSuccess( `Welcome back, ${response.user.name}!` );
 
-            this.router.navigate(['/dashboard']);
+            window.location.href = '/profile';
           },
           error: (err) =>
             this.showError(
@@ -77,7 +78,8 @@ export class LoginComponent {
     this.hidePassword = !this.hidePassword;
   }
   navigate() {
-    this.router.navigate(['profile']);
+    //this.router.navigate(['profile']);
+    window.location.href = '/profile';
   }
   resetPassword(email: string) {
     //@@ TODO :  password reset

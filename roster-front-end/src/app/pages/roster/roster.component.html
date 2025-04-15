@@ -19,7 +19,7 @@
   <!-- Shift Details Panel -->
   <div class="shift-details-panel" *ngIf="selectedShift">
     <h3><strong>Shift Details</strong></h3>
-    <p><strong>Date:</strong> {{ selectedShift.shiftDate }}</p>
+    <p><strong>Date:</strong> {{ selectedShift.shiftDate | date:'dd/MM/yyyy' }}</p>
     <p><strong>Start Time:</strong> {{ selectedShift.startTime }}</p>
     <p><strong>End Time:</strong> {{ selectedShift.endTime }}</p>
     <p><strong>User:</strong> {{ shifts?.user?.name }} ({{ shifts?.user?.roleType }})</p>

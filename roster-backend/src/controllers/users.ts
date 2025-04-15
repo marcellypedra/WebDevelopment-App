@@ -71,10 +71,17 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
     }
 
     // @@ Get new values from request body
-    const { name, phoneNumber, address } = req.body;
+    const { name, email, phoneNumber, DOB, address, nationality, idNumber, visaExpiryDate, roleType } = req.body;
     user.name = name || user.name;
+    user.email = email || user.email;
     user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.DOB = DOB || user.DOB;
     user.address = address || user.address;
+    user.nationality = nationality || user.nationality;
+    user.idNumber = idNumber || user.idNumber;
+    user.visaExpiryDate = visaExpiryDate || user.visaExpiryDate;
+    user.roleType = roleType || user.roleType;
+
 
     if (req.files) {
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -127,6 +134,10 @@ export const searchUsers = async (req: express.Request, res: express.Response) =
             $or: [
                 { name: { $regex: searchQuery , $options: "i" } }, 
                 { email: { $regex: searchQuery , $options: "i" } },
+                { phoneNumber: { $regex: searchQuery , $options: "i" } },
+                { idNumber: { $regex: searchQuery , $options: "i" } },
+                { roleType: { $regex: searchQuery , $options: "i" } },
+                { nationality: { $regex: searchQuery , $options: "i" } },
             ]
         });
 

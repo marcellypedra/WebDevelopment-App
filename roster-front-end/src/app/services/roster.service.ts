@@ -18,21 +18,4 @@ export class RosterService {
       withCredentials: true,
     });
   } 
-/*
-  getUserShiftByDate(dateSelected: string, rangeType: 'day' | 'week' | 'month'): Observable<ShiftsResponse> {
-    const token = sessionStorage.getItem('ROSTER-AUTH'); 
-    return this.http.get<any>(`${this.apiUrl}/shifts/date/${dateSelected}`, {
-      headers: { Authorization: `Bearer ${token}` }, 
-      withCredentials: true,
-    });
-  }
-
-  getTeamShiftbyDate(dateSelected: string, rangeType: 'day' | 'week' | 'month'): Observable<ShiftsResponse> {
-    const token = sessionStorage.getItem('ROSTER-AUTH'); 
-    return this.http.get<any>(`${this.apiUrl}/shifts/team/${rangeType}/${dateSelected}`, {
-      headers: { Authorization: `Bearer ${token}` }, 
-      withCredentials: true,
-    });
-  }  
-    */
 }

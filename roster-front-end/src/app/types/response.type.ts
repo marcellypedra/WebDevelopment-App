@@ -16,8 +16,8 @@ export type UserResponse = { //ShiftResponse
             salt: string;
             sessionToken?: string;
         };
-        profileImage: string, 
-        idFile: string, 
+        profileImage?: string, 
+        idFile?: string, 
         visaFile?: string, 
     };
 };

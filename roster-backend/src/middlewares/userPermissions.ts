@@ -69,26 +69,3 @@ export const isManager = (req: AuthenticatedRequest, res: Response, next: NextFu
       res.status(401).json({ message: "Unauthorized" });
   }
 };
-/*
-export const canUpdateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log("canUpdateUser middleware called");
-  try {
-    const { id } = req.params;
-    const identity = get(req, 'identity') as Identity;
-
-    if (!identity) {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
-
-    if (identity.roleType === "Manager" || identity._id.toString() === id) {
-      console.log("Manager updating any user or user updating their own data.");
-      return next();
-  }  
-
-    console.log("Unauthorized update attempt!");
-    return res.status(403).json({ message: 'Unauthorized to update user data' });
-  } catch (error) {
-    console.error("Error in canUpdateUser middleware:", error);
-    return res.status(500).json({ message: 'Internal Server Error' });
-  }
-};*/

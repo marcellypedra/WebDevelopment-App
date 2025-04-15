@@ -1,5 +1,7 @@
+import { HTTP_INTERCEPTORS, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
+import { Observable, throwError, catchError, switchMap } from 'rxjs';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
@@ -8,14 +10,22 @@ import { AppComponent } from './app.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { InputComponent } from './components/input/input.component';
 import { PasswordComponent } from './components/password/password.component';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { HeaderComponent } from './components/header/header.component';
 import { RosterComponent } from './pages/roster/roster.component';
-import { FooterComponent } from './components/footer/footer.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { UsersComponent } from './pages/users/users.component';
+import { ShiftsComponent } from './pages/shifts/shifts.component';
+
+import { AuthService } from './services/auth-service.service';
+import { RosterService } from './services/roster.service';
+import { ShiftService } from './services/shifts.service';
+
+import { AuthGuard } from './guard/auth.guard';
+import { ManagerGuard } from './guard/manager.guard';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskModule } from 'ngx-mask';
@@ -32,8 +42,51 @@ import { MatOptionModule } from '@angular/material/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthService } from './services/auth-service.service';
-import { ShiftsComponent } from './pages/shifts/shifts.component';
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private isRefreshing = false;
+
+  constructor(private authService: AuthService) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const token = sessionStorage.getItem('ROSTER-AUTH');
+
+    let authReq = req;
+    if (token) {
+      authReq = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+    }
+
+    return next.handle(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401 && !this.isRefreshing) {
+          this.isRefreshing = true;
+
+          return this.authService.refreshToken().pipe(
+            switchMap((newToken: string) => {
+              this.isRefreshing = false;
+              const newAuthReq = req.clone({
+                setHeaders: { Authorization: `Bearer ${newToken}` },
+                withCredentials: true,
+              });
+              return next.handle(newAuthReq);
+            }),
+            catchError(err => {
+              this.isRefreshing = false;
+              this.authService.logout();
+              return throwError(() => err);
+            })
+          );
+        }
+
+        return throwError(() => error);
+      })
+    );
+  }
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,7 +95,6 @@ import { ShiftsComponent } from './pages/shifts/shifts.component';
     PasswordComponent,
     LoginComponent,
     RegisterComponent,
-    DashboardComponent,
     HeaderComponent,
     RosterComponent,
     FooterComponent,
@@ -74,7 +126,10 @@ import { ShiftsComponent } from './pages/shifts/shifts.component';
     MatDatepickerModule,
     MatNativeDateModule
   ],
-  providers: [AuthService, MatDatepickerModule,],
+  providers: [
+    AuthService, RosterService, ShiftService, AuthGuard, ManagerGuard, MatDatepickerModule, 
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

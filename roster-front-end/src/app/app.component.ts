@@ -16,7 +16,7 @@ export class AppComponent {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // @@ Hide the header of the chosen page.
-        this.showNavbar = event.url !== '/login' && event.url !== '/dashboard';
+        this.showNavbar = event.url !== '/login';
       }
     });
   }

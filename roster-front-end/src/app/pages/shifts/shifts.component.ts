@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ShiftService } from '../../services/shifts.service'; 
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-shifts',
   templateUrl: './shifts.component.html',
-  styleUrls: ['./shifts.component.css']
+  styleUrls: ['./shifts.component.scss']
 })
 export class ShiftsComponent implements OnInit {
 
@@ -17,24 +17,21 @@ export class ShiftsComponent implements OnInit {
   users: { _id: string; name: string }[] = [];
   shifts: any[] = [];
 
-
-
-  constructor(private router: Router, private shiftService: ShiftService) {}
+  constructor(private router: Router, private shiftService: ShiftService,     private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.getAllUsers();}
+    this.getAllUsers();
+  }
 
-    getAllUsers() {
-      this.shiftService.getAllUsers().subscribe((response) => {
-        this.users = response.users;
-        // When employees are fetched, initialize shift table if dates already selected
-        if (this.shiftbegindate && this.shiftenddate) {
-          this.generateWeekDates();
-        }
-      });
-    }
-
-
+  getAllUsers() {
+    this.shiftService.getAllUsers().subscribe((response) => {
+      this.users = response.users;
+      // When employees are fetched, initialize shift table if dates already selected
+      if (this.shiftbegindate && this.shiftenddate) {
+        this.generateWeekDates();
+      }
+    });
+  }
 
   generateWeekDates() {
     if (!this.shiftbegindate || !this.shiftenddate) return;
@@ -87,15 +84,24 @@ export class ShiftsComponent implements OnInit {
     console.log('Submitting shifts:', payload);
 
     this.shiftService.saveShifts(payload).subscribe({
-      next: () => alert('Shifts saved successfully'),
+      next: () => { 
+        this.showSuccess( 'Shifts saved successfully!') 
+        window.location.href = '/roster';
+      },
       error: (err) => console.error('Error saving shifts:', err)
     });
   }
 
-
-
   navigate() {
-    this.router.navigate(['login']);
+    window.location.href = '/roster';
+  }
+  showSuccess(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['snack-success'],
+    });
   }
 }
   

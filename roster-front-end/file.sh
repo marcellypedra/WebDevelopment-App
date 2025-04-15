@@ -23,7 +23,7 @@ if [ ! -f package.json ]; then
   "description": "Angular CLI: 15.1.6\r Node: 18.20.6\r Package Manager: npm 10.8.2",
   "main": "index.js",
   "scripts": {
-    "test": "echo \\"Error: no test specified\\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +37,7 @@ if [ ! -f package.json ]; then
     "@angular/material": "^15.2.9",
     "@angular/platform-browser-dynamic": "^15.2.10",
     "@angular/router": "^15.2.10",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@fullcalendar/angular": "^6.1.17",
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/interaction": "^6.1.17",
@@ -52,6 +53,7 @@ if [ ! -f package.json ]; then
     "typescript": "^4.9.5"
   }
 }
+
 EOL
     echo "@@ package.json created."
 else
@@ -62,8 +64,9 @@ fi
 if [ ! -f angular.json ]; then
     echo "@@ angular.json not found. Creating angular.json..."
     cat <<EOL > angular.json
+
 {
-  "\$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -86,6 +89,7 @@ if [ ! -f angular.json ]; then
             "styles": [
               "@angular/material/prebuilt-themes/purple-green.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -157,6 +161,7 @@ if [ ! -f angular.json ]; then
     "analytics": "4738848a-0dd7-44d0-bfcf-43180aca0fd8"
   }
 }
+
 EOL
     echo "@@ angular.json created."
 else

@@ -93,7 +93,6 @@ export class RosterComponent implements OnInit {
     }
   }
 
-
   updateCalendarEvents(): void {
     if (this.shifts && this.shifts.shiftsForUser) {
       this.calendarOptions.events = this.shifts.shiftsForUser.map(shift => ({

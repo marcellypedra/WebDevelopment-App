@@ -137,7 +137,8 @@ export class RegisterComponent {
         this.snackBar.open('Employee registered successfully!', 'Close', { 
           duration: 3000, panelClass: ['snack-success'] 
         });
-        this.router.navigate(['/dashboard']);
+        //this.router.navigate(['/users']);
+        window.location.href = '/users';
       },
       error: (err) => {
         console.error('Error:', err);
@@ -150,6 +151,7 @@ export class RegisterComponent {
   } 
 
   navigate() {
-    this.router.navigate(['login']);
+    //this.router.navigate(['login']);
+    window.location.href = '/login';
   }
 }

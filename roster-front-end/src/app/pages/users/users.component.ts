@@ -102,6 +102,7 @@ export class UsersComponent implements OnInit {
       }
     );
   }
+  
   formatPhoneNumber(phoneNumber: string): string {
     if (!phoneNumber) return '';
 
