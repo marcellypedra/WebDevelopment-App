@@ -1,11 +1,10 @@
 nav {
-    height: 10vh;
-    min-height: 50px;
-    max-height: 120;
-  }
-  
-  .navbar-brand {
-    font-size: 25px;
-    padding-left: 10px;
-  }
-  
+  height: 10vh;
+  min-height: 50px;
+  max-height: 120;
+}
+.navbar-brand {
+  font-size: 25px;
+  padding-left: 10px;
+} 
+.logout {cursor: pointer;}

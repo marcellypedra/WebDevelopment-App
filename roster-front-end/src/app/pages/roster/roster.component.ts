@@ -92,7 +92,24 @@ export class RosterComponent implements OnInit {
       this.selectedShift = null; // No shift for this day
     }
   }
-
+  getTotalHours(startTime: string, endTime: string): number {
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+  
+    const startTotalMinutes = startHours * 60 + startMinutes;
+    const endTotalMinutes = endHours * 60 + endMinutes;
+  
+    let diffMinutes = endTotalMinutes - startTotalMinutes;
+  
+    // Handle overnight shifts (if endTime is past midnight)
+    if (diffMinutes < 0) {
+      diffMinutes += 24 * 60;
+    }
+  
+    const diffHours = diffMinutes / 60;
+    return diffHours;
+  }
+  
   updateCalendarEvents(): void {
     if (this.shifts && this.shifts.shiftsForUser) {
       this.calendarOptions.events = this.shifts.shiftsForUser.map(shift => ({

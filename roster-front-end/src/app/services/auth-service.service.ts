@@ -149,8 +149,6 @@ export class AuthService {
     if (!token) return false;
 
     const decoded: any = jwtDecode(token);
-    console.log('Decoded token:', decoded);
     return decoded.roleType === 'Manager'; 
   }
-  
 }
