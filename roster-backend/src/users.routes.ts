@@ -9,4 +9,8 @@ router.use('/auth', authenticationRouter);
 router.use('/users', usersRouter);
 router.use('/shifts', shiftsRouter);
 
+router.get("/", (req, res) => {
+    res.send("Roster API is running 🚀");
+});
+
 export default router;
