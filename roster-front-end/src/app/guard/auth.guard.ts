@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  private apiUrl = process.env['API_URL'] || 'http://localhost:5200'; 
+  private apiUrl = environment.apiUrl;
 
   constructor(private router: Router) {}
 

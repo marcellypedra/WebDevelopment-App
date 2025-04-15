@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx ng build --prod"
+    "build": "ng build --configuration production",
+    "start": "serve -s dist/roster-management-app"
   },
   "engines": {
     "node": "18.20.6",
@@ -30,7 +31,8 @@
     "bootstrap": "^5.3.5",
     "jwt-decode": "^4.0.0",
     "luxon": "^3.6.1",
-    "ngx-mask": "^14.3.3"
+    "ngx-mask": "^14.3.3",
+    "serve": "^14.2.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.11",

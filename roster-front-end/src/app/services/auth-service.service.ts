@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map, BehaviorSubject } from 'rxjs';
 import { UserResponse } from '../types/response.type';
+import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 
@@ -9,7 +10,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = process.env['API_URL'] || 'http://localhost:5200'; 
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) {}
 

@@ -21,8 +21,8 @@ body {
 .icon {
     height: 45px;
     width: 40px;
-    img {
+}
+.icon > img {
         padding: 5px;
         height: 40px;
     }
-}

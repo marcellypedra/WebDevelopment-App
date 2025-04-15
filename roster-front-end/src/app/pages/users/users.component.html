@@ -29,29 +29,21 @@
       <h3>Edit User</h3>
       <form [formGroup]="editForm">
                 <!-- User Details -->
-        <app-input formControlName="name" inputName="name" label="name">
-          <img class="icon" src="/assets/icons/phone.png"/></app-input>
-        <app-input type="email" label="Email" formControlName="email" placeholder="Enter user email">
-          <img class="icon" src="/assets/icons/phone.png"/></app-input>
+        <app-input formControlName="name" inputName="name" label="name"></app-input>
+        <app-input type="email" label="Email" formControlName="email" placeholder="Enter user email">></app-input>
         <app-input type="password" label="password" formControlName="password"></app-input>
-        <app-input formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" maxlength="14" (ngModelChange)="onPhoneNumberChange($event)" placeholder="(00) 000-0000">
-          <img class="icon" src="/assets/icons/phone.png"/></app-input>
+        <app-input formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" maxlength="14" (ngModelChange)="onPhoneNumberChange($event)" placeholder="(00) 000-0000"></app-input>
               
                 <!-- Personal Information -->
         <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="DOB" inputName="DOB" InputTypes="date" label="Date of Birth">
-          <img class="icon" src="/assets/icons/agenda.png"/>
       </app-input>
       <app-input formControlName="nationality" inputName="nationality" type="text" label="Nationality">
-          <img class="icon" src="/assets/icons/nationality.png"/>
       </app-input>
       <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
-          <img class="icon" src="/assets/icons/address.png"/>
       </app-input>
       <app-input formControlName="idNumber" inputName="idNumber" type="text" label="ID Number" maxlength="15">
-          <img class="icon" src="/assets/icons/id.png"/>
       </app-input>
       <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="visaExpiryDate" inputName="visaExpiryDate" InputTypes="date" label="Visa Expiry (Optional)">
-          <img class="icon" src="/assets/icons/agenda.png"/>
       </app-input>
 
                 <!-- Role & Upload Documents -->
