@@ -19,7 +19,17 @@ if (!ATLAS_URI) {
 }
 
 const app = express();
-app.use(cors({ origin: ["http://localhost:4200", "https://webdevelopment-vmck.onrender.com"], credentials: true }));
+app.use(cors({
+  origin: [
+    "http://localhost:4200",
+    "https://webdevelopment-vmck.onrender.com",
+    "https://roster-jte4.onrender.com"
+  ],
+  credentials: true
+}));
+
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
