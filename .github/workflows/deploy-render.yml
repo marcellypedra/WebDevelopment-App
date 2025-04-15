@@ -5,7 +5,7 @@ on:
     inputs:
       serviceID:
         type: string
-        description: 'Render Service ID (e.g., srv-abc123)'
+        description: 'Render Service ID'
         required: true
 
 jobs:
