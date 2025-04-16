@@ -55,7 +55,7 @@ export const UserSchema = new mongoose.Schema({
     authentication: {
         salt: { type: String, required: true },
         password: { type: String, required: true },
-        sessionToken: { type: String, required: true }
+        sessionToken: { type: String, required: false }
     }
 });
 const AuthSchema = new mongoose.Schema({

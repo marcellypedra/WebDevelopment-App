@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ng build --configuration production",
+  "build": "ng build --configuration production --base-href /WebDevelopment-App/",
     "start": "serve -s dist/roster-management-app"
   },
   "engines": {

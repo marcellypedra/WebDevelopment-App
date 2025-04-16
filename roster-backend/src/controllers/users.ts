@@ -10,19 +10,17 @@ const convertToBase64 = (image: any) =>
         ? `data:${image.contentType};base64,${image.data.toString('base64')}`
         : null;
 
-export const getUserProfile = async (req: express.Request, res: express.Response) => {
+export const getUserProfile = async (req: AuthenticatedRequest, res: express.Response) => {
     console.log("@@ getUserProfile called")
     console.log("Request params:", req.params); 
+    console.log("Request user:", req.user); // assuming req.user contains the authenticated user
 
-    const { id } = req.params;
-    
-    if (!id || id === "undefined") {
-        console.log("Invalid or missing ID in request!");
-        return res.status(400).json({ message: "Invalid user ID" });
+    if (!req.user || !req.user._id) {
+        return res.status(401).json({ message: "Unauthorized request" });
     }
 
     try {
-        const user = await getUserById(id);
+        const user = await getUserById(req.user._id); //user from token
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -63,18 +61,11 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
     const user = await getUserById(userId);  // @@ Get user ID from database
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    let userData;
-    try {
-        userData = req.body.data ? JSON.parse(req.body.data) : req.body;
-    } catch (error) {
-        return res.status(400).json({ message: "Invalid JSON format in request body" });
-    }
-
     // @@ Get new values from request body
     const { name, email, phoneNumber, DOB, address, nationality, idNumber, visaExpiryDate, roleType } = req.body;
     user.name = name || user.name;
     user.email = email || user.email;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.phoneNumber = phoneNumber ? phoneNumber.replace(/\D/g, '') : user.phoneNumber;
     user.DOB = DOB || user.DOB;
     user.address = address || user.address;
     user.nationality = nationality || user.nationality;
@@ -85,23 +76,52 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
 
     if (req.files) {
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/png'];
 
         if (files['profileImage'] && files['profileImage'].length > 0) {
+            const file = files['profileImage'][0];
+  
+            if (!allowedTypes.includes(file.mimetype)) {
+              return res.status(400).json({ message: 'Invalid file type for profile image.' });
+            }
+          
+            if (file.size > maxSize) {
+              return res.status(400).json({ message: 'Profile image file is too large.' });
+            }          
             user.profileImage = {
-                data: files['profileImage'][0].buffer,
-                contentType: files['profileImage'][0].mimetype,
+                data: file.buffer,
+                contentType: file.mimetype,
             };
         }
         if (files['idFile'] && files['idFile'].length > 0) {
+            const file = files['profileImage'][0];
+  
+            if (!allowedTypes.includes(file.mimetype)) {
+              return res.status(400).json({ message: 'Invalid file type for profile image.' });
+            }
+          
+            if (file.size > maxSize) {
+              return res.status(400).json({ message: 'Profile image file is too large.' });
+            }          
             user.idFile = {
-                data: files['idFile'][0].buffer,
-                contentType: files['idFile'][0].mimetype,
+                data: file.buffer,
+                contentType: file.mimetype,
             };
         }
         if (files['visaFile'] && files['visaFile'].length > 0) {
+            const file = files['profileImage'][0];
+  
+            if (!allowedTypes.includes(file.mimetype)) {
+              return res.status(400).json({ message: 'Invalid file type for profile image.' });
+            }
+          
+            if (file.size > maxSize) {
+              return res.status(400).json({ message: 'Profile image file is too large.' });
+            }          
             user.visaFile = {
-                data: files['visaFile'][0].buffer,
-                contentType: files['visaFile'][0].mimetype,
+                data: file.buffer,
+                contentType: file.mimetype,
             };
         }
     }
@@ -141,6 +161,7 @@ export const searchUsers = async (req: express.Request, res: express.Response) =
             ]
         });
 
+        console.log('Found users:', users); 
         res.status(200).json({ users });
     } catch (error) {
         console.error("Error searching users:", error);

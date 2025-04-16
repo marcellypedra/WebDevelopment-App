@@ -7,7 +7,9 @@ import compression from "compression";
 import cors from "cors";
 import mongoose from "mongoose";
 import { connectToDatabase } from "./db/database";
-import router from "./users.routes";
+import authenticationRouter from './router/authentication';
+import shiftRoutes from './router/shifts';
+import userRoutes from './router/users';
 
 dotenv.config();
 
@@ -44,7 +46,9 @@ connectToDatabase(ATLAS_URI)
     mongoose.Promise = Promise;
     mongoose.connection.on("error", (error: Error) => console.log(error));
 
-    app.use("/", router);
-  
+    app.use('/auth', authenticationRouter);
+    app.use('/shifts', shiftRoutes);
+    app.use('/users', userRoutes);
+
   })
   .catch((error) => console.error(error));

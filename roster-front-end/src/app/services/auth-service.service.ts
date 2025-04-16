@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map, BehaviorSubject } from 'rxjs';
+import { Observable, tap, map, BehaviorSubject, throwError } from 'rxjs';
 import { UserResponse } from '../types/response.type';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
@@ -107,7 +107,6 @@ export class AuthService {
 
   updateUserProfile(userId: string, updatedData: any): Observable<any> {
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
-    
     const isFormData = updatedData instanceof FormData;
 
     return this.http.put(`${this.apiUrl}/users/${userId}`, updatedData, {
@@ -118,8 +117,12 @@ export class AuthService {
     });
   }
 
-  getUserProfile(userId: string): Observable<any> {
+  getUserProfile(): Observable<any> {
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
+    const userId = this.getUserIdFromToken();  
+
+    if (!userId) { return throwError('User ID is missing'); }
+    
     return this.http.get<any>(`${this.apiUrl}/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }, 
       withCredentials: true,
@@ -141,7 +144,9 @@ export class AuthService {
       params: { search: query }, 
       headers: { Authorization: `Bearer ${token}` }, 
       withCredentials: true,
-    });
+    }).pipe(
+      tap(resp => console.log('Search Response:', resp))
+    );
   }  
 
   isManager(): boolean {

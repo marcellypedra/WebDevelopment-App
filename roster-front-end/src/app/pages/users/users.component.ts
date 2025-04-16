@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth-service.service';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
   userProfileImage: string | null = null; 

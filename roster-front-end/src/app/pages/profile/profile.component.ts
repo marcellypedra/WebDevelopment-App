@@ -134,7 +134,7 @@ export class ProfileComponent implements OnInit {
     if (this.profileForm.valid) {
       const formData = new FormData();
   
-      formData.append('email', this.currentUser.email);
+      formData.append('email', this.profileForm.value.email);
       formData.append('phoneNumber', this.profileForm.value.phoneNumber);
       formData.append('address', this.profileForm.value.address);
       
@@ -164,13 +164,12 @@ export class ProfileComponent implements OnInit {
   }
   
   getUserProfile(): void {
-    this.authService.getUserProfile(this.userId).subscribe(
+    this.authService.getUserProfile().subscribe(
       (profile: any) => {
         this.currentUser = profile;
-        this.userProfileImage = profile.photoUrl;
-        this.userVisaFile = profile.photoUrl;
-        this.userIdFile = profile.photoUrl;
-
+        this.userProfileImage = profile.profileImage;
+        this.userIdFile = profile.idFile;
+        this.userVisaFile = profile.visaFile;   
       },
       (error: any) => {
         console.error('Error fetching user profile:', error);

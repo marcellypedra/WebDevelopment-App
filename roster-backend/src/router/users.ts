@@ -12,12 +12,12 @@ usersRouter.use(authenticateUser);
 usersRouter.get('/', isManager, getAllUsers);
 
 usersRouter.get('/search', isManager, searchUsers); 
+
+usersRouter.get('/profile', authenticateUser, getUserProfile);
 usersRouter.get('/:id', getUserProfile); 
 
 usersRouter.put('/:id', upload.fields([
-    { name: 'profileImage', maxCount: 1 },
-    { name: 'idFile', maxCount: 1 },
-    { name: 'visaFile', maxCount: 1 }
+    { name: 'profileImage' }, { name: 'idFile' }, { name: 'visaFile' }
 ]), updateUser);
 
 usersRouter.delete('/:id', isManager, deleteUser);
