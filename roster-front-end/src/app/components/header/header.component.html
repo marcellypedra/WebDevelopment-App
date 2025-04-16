@@ -12,24 +12,24 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav" #navbarNav>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/profile">Profile</a>
+          <a class="nav-link" (click)="closeMenu()" routerLink="/profile">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/roster">Roster</a>
+          <a class="nav-link" (click)="closeMenu()" routerLink="/roster">Roster</a>
         </li>
 
         <!-- Only for manager -->
         <li class="nav-item" *ngIf="isManager()">
-          <a class="nav-link" routerLink="/register">Register</a>
+          <a class="nav-link" (click)="closeMenu()" routerLink="/register">Register</a>
         </li>
         <li class="nav-item" *ngIf="isManager()">
-          <a class="nav-link" routerLink="/shifts">Shifts</a>
+          <a class="nav-link" (click)="closeMenu()" routerLink="/shifts">Shifts</a>
         </li>
         <li class="nav-item" *ngIf="isManager()">
-          <a class="nav-link" routerLink="/users">Users</a>
+          <a class="nav-link" (click)="closeMenu()" routerLink="/users">Users</a>
         </li>
 
         <li class="nav-item">

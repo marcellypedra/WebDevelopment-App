@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-  "build": "ng build --configuration production --base-href /WebDevelopment-App/",
+    "build": "ng build --configuration production --base-href /WebDevelopment-App/",
     "start": "serve -s dist/roster-management-app"
   },
   "engines": {
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.11",
     "@angular/cli": "^15.1.6",
+    "@types/bootstrap": "^5.2.10",
     "@types/luxon": "^3.6.2",
     "@types/node": "^22.14.0",
     "typescript": "^4.9.5"
