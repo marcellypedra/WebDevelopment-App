@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://webdevelopment-vmck.onrender.com/auth'
+    apiUrl: 'https://webdevelopment-vmck.onrender.com'
   };
   

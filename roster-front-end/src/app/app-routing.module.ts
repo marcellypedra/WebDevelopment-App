@@ -10,13 +10,13 @@ import { AuthGuard } from './guard/auth.guard';
 import { ManagerGuard } from './guard/manager.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard, ManagerGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent, canActivate: [AuthGuard, ManagerGuard] },
   { path: 'roster', component: RosterComponent, canActivate: [AuthGuard] },
   {path: 'shifts', component: ShiftsComponent, canActivate:[AuthGuard, ManagerGuard]},
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }, // @@ Keep as the last.
 ];
 
