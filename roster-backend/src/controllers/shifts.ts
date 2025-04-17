@@ -56,7 +56,6 @@ export const getShiftsByUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export const getShiftsByDate = async (req: Request, res: Response) => {
   console.log("@@ getShiftsByDate called")
   console.log("Request params:", req.params); 
@@ -67,8 +66,7 @@ export const getShiftsByDate = async (req: Request, res: Response) => {
 
     const allShiftsForDateSelected = await collections.Shifts?.find({
       shiftDate: shiftDateSelected,
-    }).exec() as any[];  // Cast to `any[]` first
-    // Now it can cast to Shifts[]
+    }).exec() as any[];  
     const allShiftsForDateSelectedTyped = allShiftsForDateSelected as Shifts[];
 
     if (!allShiftsForDateSelectedTyped?.length) {
@@ -105,7 +103,6 @@ export const getShiftsByDate = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export const createShifts = async (req: Request, res: Response) => {
   console.log("@@ createShifts called");
   try {
@@ -168,5 +165,47 @@ export const createShifts = async (req: Request, res: Response) => {
       console.log(JSON.stringify(error.writeErrors, null, 2)); // Stringify for better readability
     }
     res.status(500).json({ message: "Server error", error });
+  }
+};
+export const getTeamShifts = async (req: Request, res: Response) => {
+  try {
+    const allShiftsDocs = await collections.Shifts?.find({}).exec();
+
+    if (!allShiftsDocs || allShiftsDocs.length === 0) {
+      return res.status(404).json({ message: "No shifts found for the team" });
+    }
+
+    // Convert Mongoose documents to plain objects
+    const allShifts = allShiftsDocs.map(doc => doc.toObject());
+
+    // Get unique userIds from shifts
+    const uniqueIdsSet = new Set<string>();
+    allShifts.forEach(shift => uniqueIdsSet.add(shift.userId.toString()));
+    const userIds = Array.from(uniqueIdsSet).map(id => new ObjectId(id));
+
+
+    const users = await collections.Users?.find({
+      _id: { $in: userIds },
+    }).exec() as User[];
+
+    const shiftsWithUserDetails = allShifts.map(shift => {
+      const user = users.find(u => u._id.toString() === shift.userId.toString());
+      return {
+        _id: shift._id,
+        shiftDate: shift.shiftDate,
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        user: user ? {
+          _id: user._id,
+          name: user.name,
+          roleType: user.roleType,
+        } : null,
+      };
+    });
+
+    res.status(200).json({ shifts: shiftsWithUserDetails });
+  } catch (error) {
+    console.error("Error fetching team shifts:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

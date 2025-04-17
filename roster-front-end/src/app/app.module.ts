@@ -21,8 +21,6 @@ import { UsersComponent } from './pages/users/users.component';
 import { ShiftsComponent } from './pages/shifts/shifts.component';
 
 import { AuthService } from './services/auth-service.service';
-import { RosterService } from './services/roster.service';
-import { ShiftService } from './services/shifts.service';
 
 import { AuthGuard } from './guard/auth.guard';
 import { ManagerGuard } from './guard/manager.guard';
@@ -127,7 +125,7 @@ export class AuthInterceptor implements HttpInterceptor {
     MatNativeDateModule
   ],
   providers: [
-    AuthService, RosterService, ShiftService, AuthGuard, ManagerGuard, MatDatepickerModule, 
+    AuthService, AuthGuard, ManagerGuard, MatDatepickerModule, 
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],

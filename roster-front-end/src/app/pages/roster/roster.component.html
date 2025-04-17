@@ -1,34 +1,47 @@
 <div class="roster-container">
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-spinner">
-    <mat-spinner diameter="40"></mat-spinner>
-    <span>Loading shifts...</span>
-  </div>
+  <div class="calendar-and-summary">
+    <!-- Calendar -->
+    <div class="calendar-container">
+      <full-calendar [options]="calendarOptions"></full-calendar>
+    </div>
+    <div class="shift-info-container">
+    <!-- Daily Summary -->
+      <div class="daily-summary-panel">
+        <h3>Daily Summary</h3>
+        <ng-container *ngIf="selectedDaySummary as summary; else noDay">
+        <!-- Summary content -->
+          <p>
+            <strong>{{ summary.date | date:'dd/MM' }}:</strong>
+            <span *ngIf="summary.userShifts > 0" class="badge user-badge">
+              {{ summary.userShifts }} user
+            </span>
+            <span *ngIf="summary.teamShifts > 0" class="badge team-badge">
+              {{ summary.teamShifts }} team
+            </span>
+            <span *ngIf="summary.userShifts + summary.teamShifts === 0">
+              No shifts
+            </span>
+          </p>
+        </ng-container>
+        
+        <!-- Add this missing template -->
+        <ng-template #noDay>
+          <p>Select a day to see its summary.</p>
+        </ng-template>
+      </div>      
 
-  <!-- Error State -->
-  <div *ngIf="!isLoading && errorMessage" class="error-message">
-    Error: {{ errorMessage }}
-    <button (click)="fetchShiftsForUser()">Retry</button>
+    <!-- Shift Details -->
+    <div class="shift-details-panel" *ngIf="selectedShift; else noShiftSelected">
+      <h3><strong>Shift Details</strong></h3>
+      <p><strong>Staff:</strong> {{ selectedShift?.user?.name }} ({{ selectedShift?.user?.roleType }})</p>
+      <p><strong>Date:</strong> {{ selectedShift.shiftDate | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Start Time:</strong> {{ selectedShift.startTime }}</p>
+      <p><strong>End Time:</strong> {{ selectedShift.endTime }}</p>
+      <p><strong>Total Hours:</strong> {{ getTotalHours(selectedShift.startTime, selectedShift.endTime) }} hrs</p>
+    </div>
+    <ng-template #noShiftSelected>
+      <p>No shift selected for you this day</p>
+    </ng-template>
   </div>
-
-  <!-- Shifts Calendar -->
-  <div *ngIf="!isLoading && shifts" class="calendar-container">
-    <full-calendar [options]="calendarOptions"></full-calendar>
-  </div>
-
-  <!-- Shift Details Panel -->
-  <div class="shift-details-panel" *ngIf="selectedShift">
-    <h3><strong>Shift Details</strong></h3>
-    <p><strong>Staff:</strong> {{ shifts?.user?.name }} ({{ shifts?.user?.roleType }})</p>
-    <p><strong>Date:</strong> {{ selectedShift.shiftDate | date:'dd/MM/yyyy' }}</p>
-    <p><strong>Start Time:</strong> {{ selectedShift.startTime }}</p>
-    <p><strong>End Time:</strong> {{ selectedShift.endTime }}</p>
-    <p><strong>Total Hours:</strong> {{ getTotalHours(selectedShift.startTime, selectedShift.endTime) }} hrs</p>
-  </div>
-
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading && !shifts && !errorMessage" class="empty-state">
-    No shifts available for this period.
-  </div>
+    
 </div>

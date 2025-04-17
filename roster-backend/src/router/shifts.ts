@@ -1,14 +1,14 @@
-// src/router/shifts.ts
 import express from "express";
-import { getShiftsByUser, getShiftsByDate, createShifts } from "../controllers/shifts";
+import { getShiftsByUser, getShiftsByDate, createShifts, getTeamShifts } from "../controllers/shifts";
 import { authenticateUser } from "../middlewares/userPermissions";
 
 const shiftsRouter = express.Router();
 
-//shiftsRouter.use(authenticateUser);
+shiftsRouter.use(authenticateUser);
 
 shiftsRouter.get("/user/:id", getShiftsByUser);
 shiftsRouter.get("/date/:dateSelected", getShiftsByDate);
+shiftsRouter.get('/team', getTeamShifts);
 
 shiftsRouter.post("/", createShifts);
 

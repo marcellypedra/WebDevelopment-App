@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map, BehaviorSubject, throwError } from 'rxjs';
-import { UserResponse } from '../types/response.type';
+import { UserResponse, ShiftsResponse, TeamShiftsResponse } from '../types/response.type';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
@@ -136,7 +136,6 @@ export class AuthService {
       withCredentials: true,
     });
   }
-  
   searchUsers(query: string): Observable<any> {
     console.log('Search query:', query);
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
@@ -148,12 +147,43 @@ export class AuthService {
       tap(resp => console.log('Search Response:', resp))
     );
   }  
-
   isManager(): boolean {
     const token = sessionStorage.getItem('ROSTER-AUTH'); 
     if (!token) return false;
 
     const decoded: any = jwtDecode(token);
     return decoded.roleType === 'Manager'; 
+  }
+  getAllUsers(): Observable<{users: { _id: string; name: string }[]}> {
+    const token = sessionStorage.getItem('ROSTER-AUTH'); 
+    return this.http.get<{ users:{_id: string; name: string }[]}>(`${this.apiUrl}/users`, {  
+      headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` }, 
+        withCredentials: true,
+    });
+  }
+
+  getTeamShifts(): Observable<TeamShiftsResponse> {
+    const token = sessionStorage.getItem('ROSTER-AUTH');
+    return this.http.get<TeamShiftsResponse>(`${this.apiUrl}/shifts/team`, {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true,
+    });
+  }
+  getShiftForUser(userId: string): Observable<ShiftsResponse> {
+    const token = sessionStorage.getItem('ROSTER-AUTH'); 
+    return this.http.get<ShiftsResponse>(`${this.apiUrl}/shifts/user/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }, 
+      withCredentials: true,
+    });
+  } 
+  // Save shift data
+  saveShifts(shifts: any[]): Observable<any> {
+    const token = sessionStorage.getItem('ROSTER-AUTH');  
+    return this.http.post(`${this.apiUrl}/shifts`, shifts, { 
+      headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` }, 
+        withCredentials: true,
+    });   
   }
 }

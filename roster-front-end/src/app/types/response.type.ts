@@ -21,11 +21,19 @@ export type UserResponse = { //ShiftResponse
         visaFile?: string, 
     };
 };
-
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    roleType: string;
+}
 export interface ShiftsResponse {
     user: User; 
     shiftsForUser: Shift[];
 }
+export interface TeamShiftsResponse {
+    shiftsForTeam: Shift[];
+}  
 
 export interface Shift {
     _id?: string;
@@ -33,11 +41,4 @@ export interface Shift {
     shiftDate: string;
     startTime: string;
     endTime: string;
-}
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    roleType: string;
 }

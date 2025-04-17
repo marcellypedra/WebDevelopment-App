@@ -4,10 +4,8 @@ import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
-import { ShiftsResponse } from '../../types/response.type';
-
+import { Shift, ShiftsResponse, TeamShiftsResponse } from '../../types/response.type';
 import { AuthService } from '../../services/auth-service.service';
-import { RosterService } from '../../services/roster.service';
 
 @Component({
   selector: 'app-roster',
@@ -15,7 +13,8 @@ import { RosterService } from '../../services/roster.service';
   styleUrls: ['./roster.component.css']
 })
 export class RosterComponent implements OnInit {
-  shifts: ShiftsResponse | null = null;
+  userShifts: ShiftsResponse | null = null;
+  teamShifts: TeamShiftsResponse | null = null;
 
   today: DateTime = DateTime.local();
   firstDayOfActiveMonth: DateTime = this.today.startOf('month');
@@ -27,102 +26,198 @@ export class RosterComponent implements OnInit {
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
-    weekends: true,
     events: [],
     eventClick: this.handleEventClick.bind(this),
     dateClick: this.handleDateClick.bind(this),
     eventClassNames: (arg) => {
-      return 'shift-event'; // Add a custom class to each event
-    },
+      return ['shift-event', ...arg.event.classNames];
+    }
   };
 
   selectedShift: any | null = null;
   userId: string = '';
 
-  constructor(
-    private authService: AuthService,
-    private rosterService: RosterService
-  ) { }
+  dailySummaries: { date: string, userShifts: number, teamShifts: number }[] = [];
+
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.fetchShiftsForUser();
+    this.fetchShifts();
   }
 
-  fetchShiftsForUser(): void {
+  fetchShifts(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
     const userId = this.authService.getUserIdFromToken();
     if (!userId) {
-      console.error("User ID not found");
       this.errorMessage = "User ID not found. Please log in again.";
       this.isLoading = false;
       return;
     }
-    console.log("userID from token: ", userId);
-    this.rosterService.getShiftForUser(userId).subscribe({
-      next: (data) => {
-        this.shifts = data;
-        this.isLoading = false;
+
+    let userLoaded = false;
+    let teamLoaded = false;
+
+    const checkAndUpdate = () => {
+      if (userLoaded && teamLoaded) {
         this.updateCalendarEvents();
+        this.updateDailySummaries();
+        this.isLoading = false;
+      }
+    }
+
+    // Fetch user shifts
+    this.authService.getShiftForUser(userId).subscribe({
+      next: (userData) => {
+        console.log('Team shifts data:', userData);
+        this.userShifts = userData;
+        userLoaded = true;
+        checkAndUpdate();
       },
       error: (err) => {
-        console.error('Failed to load shifts:', err);
-        this.errorMessage = 'Failed to load shifts. Please try again later.';
+        this.errorMessage = 'Failed to load user shifts.';
+        this.isLoading = false;
+      }
+    });
+
+    // Fetch team shifts
+    this.authService.getTeamShifts().subscribe({
+      next: (teamData: any) => {
+        console.log('Team shifts raw:', teamData);
+        this.teamShifts = {
+          shiftsForTeam: teamData.shifts.map((shift: Shift) => ({
+            ...shift,
+            shiftDate: new Date(shift.shiftDate).toISOString().split('T')[0]
+          }))
+        };
+        teamLoaded = true;
+        checkAndUpdate();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load team shifts.';
         this.isLoading = false;
       }
     });
   }
 
   handleEventClick(arg: any): void {
-    this.selectedShift = arg.event.extendedProps.raw; // Store the clicked shift data
+    this.selectedShift = arg.event.extendedProps.raw;
   }
 
   handleDateClick(arg: any): void {
     const clickedDate = DateTime.fromJSDate(arg.date).toISODate();
-
-    // Filter shifts for the selected date
-    const shiftsForDay = this.shifts?.shiftsForUser.filter(shift =>
-      DateTime.fromISO(shift.shiftDate).toISODate() === clickedDate
-    );
-
-    if (shiftsForDay && shiftsForDay.length > 0) {
-      this.selectedShift = shiftsForDay[0]; // Display the first shift for now
+    
+    if (clickedDate) {
+      this.activeDay = DateTime.fromISO(clickedDate);
+      
+      // Check both user and team shifts
+      const allShifts = [
+        ...(this.userShifts?.shiftsForUser || []),
+        ...(this.teamShifts?.shiftsForTeam || [])
+      ];
+      
+      this.selectedShift = allShifts.find(
+        shift => shift.shiftDate === clickedDate
+      ) || null;
     } else {
-      this.selectedShift = null; // No shift for this day
+      this.activeDay = null;
+      this.selectedShift = null;
     }
   }
+  
+  get selectedDaySummary() {
+    if (!this.activeDay) return null;
+  
+    const dateISO = this.activeDay.toISODate();
+  
+    const userShifts = this.userShifts?.shiftsForUser?.filter(
+      shift => shift.shiftDate === dateISO
+    ).length || 0;
+  
+    const teamShifts = this.teamShifts?.shiftsForTeam?.filter(
+      shift => shift.shiftDate === dateISO
+    ).length || 0;
+  
+    return {
+      date: dateISO,
+      userShifts,
+      teamShifts
+    };
+  }  
   getTotalHours(startTime: string, endTime: string): number {
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     const [endHours, endMinutes] = endTime.split(':').map(Number);
-  
+
     const startTotalMinutes = startHours * 60 + startMinutes;
     const endTotalMinutes = endHours * 60 + endMinutes;
-  
+
     let diffMinutes = endTotalMinutes - startTotalMinutes;
-  
-    // Handle overnight shifts (if endTime is past midnight)
+
     if (diffMinutes < 0) {
       diffMinutes += 24 * 60;
     }
-  
+
     const diffHours = diffMinutes / 60;
     return diffHours;
   }
-  
+
   updateCalendarEvents(): void {
-    if (this.shifts && this.shifts.shiftsForUser) {
-      this.calendarOptions.events = this.shifts.shiftsForUser.map(shift => ({
-        title: `${shift.startTime} - ${shift.endTime}`,
-        start: shift.shiftDate, // Ensure this is in ISO format
-        end: shift.shiftDate,   // For all-day events, start and end can be the same
-        allDay: true,
-        extendedProps: { raw: shift } // Store shift data for click handling
-      }));
-    } else {
-      this.calendarOptions.events = [];
-    }
+    const userEvents = (this.userShifts?.shiftsForUser ?? []).map((shift: Shift) => ({
+      title: `${shift.startTime} - ${shift.endTime} (You)`,
+      start: shift.shiftDate,
+      allDay: true,
+      classNames: ['user-shift'],
+      extendedProps: { raw: shift }
+    }));
+
+    const teamEvents = (this.teamShifts?.shiftsForTeam ?? []).map((shift: Shift) => ({
+      title: `${shift.startTime} - ${shift.endTime} (Team)`,
+      start: shift.shiftDate,
+      allDay: true,
+      classNames: ['team-shift'],
+      extendedProps: { raw: shift }
+    }));    
+
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      eventSources: [
+        {
+          events: userEvents,
+          color: 'blue', // User events color
+          textColor: 'white'
+        },
+        {
+          events: teamEvents,
+          color: 'green', // Team events color
+          textColor: 'white'
+        }
+      ]
+    };    
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+    console.log('Calendar events:', [...userEvents, ...teamEvents]);
   }
+
+  updateDailySummaries(): void {
+    const daysInMonth = this.daysOfMonth;
+    this.dailySummaries = daysInMonth.map(day => {
+      const dateISO = day.toISODate();
+      
+      const userShifts = this.userShifts?.shiftsForUser?.filter(shift =>
+        shift.shiftDate === dateISO
+      ).length || 0;
+  
+      const teamShifts = this.teamShifts?.shiftsForTeam?.filter(shift =>
+        shift.shiftDate === dateISO
+      ).length || 0;
+  
+      return {
+        date: dateISO!,
+        userShifts,
+        teamShifts
+      };
+    });
+  }  
 
   get daysOfMonth(): DateTime[] {
     return Interval.fromDateTimes(
@@ -134,13 +229,11 @@ export class RosterComponent implements OnInit {
   }
 
   get activeDayShift(): any[] {
-    if (!this.activeDay) return [];
-    const activeDayISO = this.activeDay.toISODate();
+    if (!this.activeDay || !this.userShifts?.shiftsForUser) return [];
 
-    return activeDayISO
-      ? this.shifts!.shiftsForUser.filter(shift =>
-        DateTime.fromISO(shift.shiftDate).toISODate() === activeDayISO
-      ) : [];
+    return this.userShifts.shiftsForUser.filter(shift =>
+      DateTime.fromISO(shift.shiftDate).toISODate() === this.activeDay!.toISODate()
+    );
   }
 
   goToPreviousMonth(): void {
@@ -159,6 +252,6 @@ export class RosterComponent implements OnInit {
   }
 
   private loadShiftsForMonth(): void {
-    this.fetchShiftsForUser();
+    this.fetchShifts();
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ShiftService } from '../../services/shifts.service'; 
+import { AuthService } from '../../services/auth-service.service'; 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -17,7 +17,7 @@ export class ShiftsComponent implements OnInit {
   users: { _id: string; name: string }[] = [];
   shifts: any[] = [];
 
-  constructor(private router: Router, private shiftService: ShiftService,     private snackBar: MatSnackBar) {}
+  constructor(private router: Router, private shiftService: AuthService,     private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.getAllUsers();
