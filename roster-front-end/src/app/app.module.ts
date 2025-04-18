@@ -1,5 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Injectable, NgModule } from '@angular/core';
 import { Observable, throwError, catchError, switchMap } from 'rxjs';
 import { BrowserModule } from '@angular/platform-browser';
@@ -44,7 +45,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = sessionStorage.getItem('ROSTER-AUTH');
@@ -74,6 +75,7 @@ export class AuthInterceptor implements HttpInterceptor {
             catchError(err => {
               this.isRefreshing = false;
               this.authService.logout();
+              this.router.navigate(['/login']); 
               return throwError(() => err);
             })
           );
@@ -84,7 +86,6 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 }
-
 @NgModule({
   declarations: [
     AppComponent,
