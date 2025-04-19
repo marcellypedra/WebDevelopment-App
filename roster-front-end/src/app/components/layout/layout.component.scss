@@ -6,10 +6,8 @@ $btn-padding: 12px 24px;
 
 main {
     display: flex;
-    //flex-direction: row;
     align-items: center;
     justify-content: center;
-    //height: 100%;
 
     section {
         height: 100%; 
@@ -24,7 +22,6 @@ main {
         background-color: $secondary-color;
     }
     .form-section {
-        //flex: 0.3;
         padding: 0 35px;
 
         img {

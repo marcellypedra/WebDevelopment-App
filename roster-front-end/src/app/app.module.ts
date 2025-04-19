@@ -8,6 +8,9 @@ import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { OnlyLettersDirective } from './directives/only-letters.directive';
+import { OnlyNumbersDirective } from './directives/only-numbers.directive';
+
 import { LayoutComponent } from './components/layout/layout.component';
 import { InputComponent } from './components/input/input.component';
 import { PasswordComponent } from './components/password/password.component';
@@ -88,7 +91,9 @@ export class AuthInterceptor implements HttpInterceptor {
 }
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent,    
+    OnlyLettersDirective,
+    OnlyNumbersDirective,
     LayoutComponent,
     InputComponent,
     PasswordComponent,
@@ -124,6 +129,10 @@ export class AuthInterceptor implements HttpInterceptor {
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule
+  ],
+  exports: [
+    OnlyLettersDirective,
+    OnlyNumbersDirective
   ],
   providers: [
     AuthService, AuthGuard, ManagerGuard, MatDatepickerModule, 

@@ -22,15 +22,12 @@ export const login = async (req: express.Request, res: express.Response) => {
             return res.status(403).json({ message: "Invalid credentials" });
         }
 
-        // Generate access and refresh tokens
+        // @@ Generate access and refresh tokens
         const accessToken = generateToken(user._id.toString(), user.roleType.toString());
         const refreshToken = generateRefreshToken(user._id.toString());
-
-        // Find or create the auth record for the user
         let authRecord = await AuthModel.findOne({ userId: user._id });
-
         if (!authRecord) {
-        // Create new AuthModel if one doesnt exist yet
+        // @@ Create new AuthModel if one doesnt exist yet
             authRecord = new AuthModel({
                 userId: user._id,
                 password: user.authentication.password,
@@ -69,7 +66,7 @@ export const refreshToken = async (req: express.Request, res: express.Response) 
     }
 
     try {
-        const decoded = verifyToken(refreshToken, true);  // Ensure second param is 'true' for refresh token
+        const decoded = verifyToken(refreshToken, true);  
         if (!decoded || !decoded.id) {
             return res.status(403).json({ message: "Invalid refresh token" });
         }

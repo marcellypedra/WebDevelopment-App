@@ -1,6 +1,7 @@
 import express from 'express';
 import { AuthenticatedRequest } from '../middlewares/userPermissions';
 import { UserModel, getUsers, getUserById, deleteUserById } from '../db/users'
+import { random, authentication } from '../helpers/encryptedPassword';
 import multer from 'multer';
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -13,14 +14,14 @@ const convertToBase64 = (image: any) =>
 export const getUserProfile = async (req: AuthenticatedRequest, res: express.Response) => {
     console.log("@@ getUserProfile called")
     console.log("Request params:", req.params); 
-    console.log("Request user:", req.user); // assuming req.user contains the authenticated user
+    console.log("Request user:", req.user); 
 
     if (!req.user || !req.user._id) {
         return res.status(401).json({ message: "Unauthorized request" });
     }
 
     try {
-        const user = await getUserById(req.user._id); //user from token
+        const user = await getUserById(req.user._id); // @@ user from token
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -73,10 +74,16 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
     user.visaExpiryDate = visaExpiryDate || user.visaExpiryDate;
     user.roleType = roleType || user.roleType;
 
+    if (req.body.password) {
+        const newSalt = random();
+        const hashedPassword = authentication(newSalt, req.body.password);
+        user.authentication.salt = newSalt;
+        user.authentication.password = hashedPassword;
+    }
 
     if (req.files) {
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 5 * 1024 * 1024; // @@ 5MB
         const allowedTypes = ['image/jpeg', 'image/png'];
 
         if (files['profileImage'] && files['profileImage'].length > 0) {
@@ -95,14 +102,14 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
             };
         }
         if (files['idFile'] && files['idFile'].length > 0) {
-            const file = files['profileImage'][0];
+            const file = files['idFile'][0];
   
             if (!allowedTypes.includes(file.mimetype)) {
-              return res.status(400).json({ message: 'Invalid file type for profile image.' });
+                return res.status(400).json({ message: 'Invalid file type for ID file.' });
             }
           
             if (file.size > maxSize) {
-              return res.status(400).json({ message: 'Profile image file is too large.' });
+                return res.status(400).json({ message: 'ID file is too large.' });
             }          
             user.idFile = {
                 data: file.buffer,
@@ -110,14 +117,14 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
             };
         }
         if (files['visaFile'] && files['visaFile'].length > 0) {
-            const file = files['profileImage'][0];
+            const file = files['visaFile'][0];
   
             if (!allowedTypes.includes(file.mimetype)) {
-              return res.status(400).json({ message: 'Invalid file type for profile image.' });
+                return res.status(400).json({ message: 'Invalid file type for visa file.' });
             }
           
             if (file.size > maxSize) {
-              return res.status(400).json({ message: 'Profile image file is too large.' });
+                return res.status(400).json({ message: 'Visa file is too large.' });
             }          
             user.visaFile = {
                 data: file.buffer,
@@ -126,7 +133,7 @@ export const updateUser = async (req: AuthenticatedRequest, res: express.Respons
         }
     }
     
-    //@@ Save updated user
+    // @@ Save updated user
     await user.save();        
     const updatedUser = user.toObject();
 

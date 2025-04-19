@@ -10,33 +10,89 @@
         <!-- User Details -->
         <div class="form-section">
             <h3>User Details</h3>
-            <app-input formControlName="name" inputName="name" type="text" label="Your name" maxlength="50">
+            <app-input 
+                formControlName="name" 
+                inputName="name" 
+                type="text" 
+                label="Your name" 
+                [maxlength]="50"
+                onlyLetters>
                 <img class="icon" src="/assets/icons/user-white.png"/>
             </app-input>
-            <app-input formControlName="email" inputName="email" type="email" label="Email" maxlength="30">
-                <img class="icon" src="/assets/icons/email.png"/>
+            <app-input 
+                formControlName="email" 
+                inputName="email" 
+                type="email" 
+                label="Email" 
+                [maxlength]="30"
+                ><img class="icon" src="/assets/icons/email.png"/>
             </app-input>
-            <app-input mask="(00)000-0000" placeholder="(00) 000-0000" formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" >
-                <img class="icon" src="/assets/icons/phone.png"/>
+            <app-input 
+                mask="(00) 000-0000" 
+                placeholder="(00) 000-0000" 
+                formControlName="phoneNumber" 
+                inputName="phoneNumber" 
+                inputmode="tel" 
+                label="Phone Number"
+                [maxlength]="13"
+                onlyNumbers
+                ><img class="icon" src="/assets/icons/phone.png"/>
             </app-input>
         </div>
 
         <!-- Personal Information -->
         <div class="form-section">
             <h3>Personal Information</h3>
-            <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="DOB" inputName="DOB" InputTypes="date" label="Date of Birth">
+            <app-input 
+                mask="0000-00-00" 
+                placeholder="0000-00-00" 
+                formControlName="DOB" 
+                inputName="DOB" 
+                type="date" 
+                label="Date of Birth"
+                [minlength]="8"
+                [maxlength]="10"
+                onlyNumbers>
                 <img class="icon" src="/assets/icons/agenda.png"/>
             </app-input>
-            <app-input formControlName="nationality" inputName="nationality" type="text" label="Nationality">
+            <app-input 
+                formControlName="nationality" 
+                inputName="nationality" 
+                type="text" 
+                label="Nationality"
+                [minlength]="3"
+                [maxlength]="30"
+                onlyLetters>
                 <img class="icon" src="/assets/icons/nationality.png"/>
             </app-input>
-            <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
+            <app-input 
+                formControlName="address" 
+                inputName="address" 
+                type="text" 
+                label="Address" 
+                [minlength]="3"
+                [maxlength]="200">
                 <img class="icon" src="/assets/icons/address.png"/>
             </app-input>
-            <app-input formControlName="idNumber" inputName="idNumber" type="text" label="ID Number" maxlength="15">
+            <app-input 
+                formControlName="idNumber" 
+                inputName="idNumber" 
+                type="text" 
+                label="ID Number" 
+                [minlength]="3"
+                [maxlength]="15"
+                onlyNumbers>
                 <img class="icon" src="/assets/icons/id.png"/>
             </app-input>
-            <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="visaExpiryDate" inputName="visaExpiryDate" InputTypes="date" label="Visa Expiry (Optional)">
+            <app-input 
+                mask="0000-00-00" 
+                placeholder="0000-00-00" 
+                formControlName="visaExpiryDate" 
+                inputName="visaExpiryDate" 
+                type="date" 
+                label="Visa Expiry (Optional)"
+                [maxlength]="10"
+                onlyNumbers>
                 <img class="icon" src="/assets/icons/agenda.png"/>
             </app-input>
         </div>

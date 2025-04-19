@@ -62,7 +62,7 @@ const AuthSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     password: { type: String, required: true },
     salt: { type: String, required: true },
-    sessionToken: { type: String }, // Store session tokens here
+    sessionToken: { type: String }, // @@ Store session tokens here
 });
   
 export const AuthModel = mongoose.model('Auth', AuthSchema);

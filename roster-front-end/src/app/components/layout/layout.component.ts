@@ -12,10 +12,10 @@ export class LayoutComponent {
   @Input() src: string | null = null;
   @Input() userPhoto: string | null = null;
 
-  @Output("submit") onSubmit = new EventEmitter();
+  @Output() submit = new EventEmitter<void>();
   @Output("navigate") onNavigate = new EventEmitter();
   
-  submit(){ this.onSubmit.emit(); }
+  onPrimaryButtonClick() { this.submit.emit(); }
   navigate(){ this.onNavigate.emit(); }
 
   handleImageError(event: Event) {

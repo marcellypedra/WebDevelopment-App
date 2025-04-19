@@ -17,8 +17,10 @@ usersRouter.get('/profile', authenticateUser, getUserProfile);
 usersRouter.get('/:id', getUserProfile); 
 
 usersRouter.put('/:id', upload.fields([
-    { name: 'profileImage' }, { name: 'idFile' }, { name: 'visaFile' }
-]), updateUser);
+    { name: 'profileImage', maxCount: 1 },
+    { name: 'idFile', maxCount: 1 },
+    { name: 'visaFile', maxCount: 1 }
+]), updateUser);  
 
 usersRouter.delete('/:id', isManager, deleteUser);
 

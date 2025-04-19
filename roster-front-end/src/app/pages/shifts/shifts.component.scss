@@ -67,7 +67,6 @@
     }
   }
   @media (max-width: 767.98px) {
-    // Make grid single column
     .shift-form-container,
     .register-form-container {
       grid-template-columns: 1fr !important;
@@ -88,9 +87,7 @@
       max-width: 100%;
       height: auto;
     }
-  
-    // Table: horizontal scroll and smaller font
-    .table-scroll-container {
+      .table-scroll-container {
       overflow-x: auto;
       table {
         font-size: 13px;

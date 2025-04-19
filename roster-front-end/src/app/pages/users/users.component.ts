@@ -20,15 +20,36 @@ export class UsersComponent implements OnInit {
   userId: string = '';
   selectedUser: any = null;
 
-   // @@ File selection
-   selectProfileImage: File | null = null;
-   selectIdFile: File | null = null;
-   selectVisaFile: File | null = null;
+  // @@ File selection
+  selectProfileImage: File | null = null;
+  selectIdFile: File | null = null;
+  selectVisaFile: File | null = null;
+
+  updateSuccess: boolean = false;
+  updateError: boolean = false;
+
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService
   ) { }
+  
+  formatDate(date: any): string {
+    if(date){
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+    return [year, month, day].join('-');
+    }
+    else{
+      return "";
+    }
+}
 
   ngOnInit(): void {   
     this.userId = this.authService.getUserIdFromToken() || '';
@@ -63,7 +84,7 @@ export class UsersComponent implements OnInit {
   }
   handleImageError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '/assets/icons/user.png'; //@@ If don't find the profileImage
+    img.src = '/assets/icons/user.png'; // @@ If don't find the profileImage
   }
   
   loadUserProfile(): void {
@@ -81,7 +102,7 @@ export class UsersComponent implements OnInit {
         console.log('User profile loaded:', data);
         this.currentUser = data;
 
-        //@@ If don't find the profileImage
+        // @@ If don't find the profileImage
         this.userProfileImage = data.profileImage && data.profileImage !== '' 
         ? data.profileImage : '/assets/icons/user.png';
 
@@ -89,7 +110,7 @@ export class UsersComponent implements OnInit {
           name: data.name || '',
           email: data.email || '',
           phoneNumber: this.formatPhoneNumber(data.phoneNumber || ''),
-          DOB: data.DOB || '',
+          DOB: this.formatDate(data.DOB) || '',
           nationality: data.nationality || '',
           address: data.address || '',
           idNumber: data.idNumber || '',
@@ -102,7 +123,7 @@ export class UsersComponent implements OnInit {
       }
     );
   }
-  
+
   formatPhoneNumber(phoneNumber: string): string {
     if (!phoneNumber) return '';
 
@@ -115,7 +136,6 @@ export class UsersComponent implements OnInit {
     }
     return trimmed; 
   }
-
   onPhoneNumberChange(phoneNumber: string): void {
     const formattedNumber = this.formatPhoneNumber(phoneNumber);
     
@@ -123,7 +143,6 @@ export class UsersComponent implements OnInit {
       this.editForm.controls['phoneNumber'].setValue(formattedNumber, { emitEvent: false });
     }
   } 
-    
   onFileSelect(event: any, fileType: string): void {
     const selectedFile = event.target.files[0] as File;
 
@@ -149,7 +168,6 @@ export class UsersComponent implements OnInit {
       reader.readAsDataURL(selectedFile);
     }
   }
-
   searchUsers(): void {
     if (this.searchForm.valid) {
       const query = this.searchForm.get('searchQuery')?.value;
@@ -173,7 +191,6 @@ export class UsersComponent implements OnInit {
       );
     }
   }  
-
   selectUser(user: any): void {
     this.selectedUser = { ...user };
   
@@ -185,9 +202,9 @@ export class UsersComponent implements OnInit {
       name: user.name || '',
       email: user.email || '',
       phoneNumber: this.formatPhoneNumber(user.phoneNumber || ''),
-      DOB: user.DOB || '',
+      DOB: this.formatDate(user.DOB) || '',
       nationality: user.nationality || '', 
-      visaExpiryDate: user.visaExpiryDate || '',
+      visaExpiryDate: this.formatDate(user.visaExpiryDate) || '',
       address: user.address || '',
       idNumber: user.idNumber || '',
       roleType: user.roleType || '',
@@ -195,28 +212,53 @@ export class UsersComponent implements OnInit {
     });  
     console.log('Selected User:', this.selectedUser);
   }
-  
   updateUser(): void {
+    console.log("updateUser called!");
+    console.log('editForm.valid:', this.editForm.valid);
+    console.log('selectedUser:', this.selectedUser); 
     if (this.editForm.valid && this.selectedUser) {
-      const updatedData = this.editForm.value;
+      let updatedData = this.editForm.value;
+      console.log('Outgoing update data:', updatedData);
+
+      if (!updatedData.password) {
+        delete updatedData.password;
+      }
+      const hasFiles = this.selectProfileImage || this.selectIdFile || this.selectVisaFile;
+      if (hasFiles) {
+        const formData = new FormData();
+        for (const key in updatedData) {
+          if (updatedData[key] !== undefined && updatedData[key] !== null) {
+            formData.append(key, updatedData[key]);
+          }
+        }
+        if (this.selectProfileImage) formData.append('profileImage', this.selectProfileImage);
+        if (this.selectIdFile) formData.append('idFile', this.selectIdFile);
+        if (this.selectVisaFile) formData.append('visaFile', this.selectVisaFile);
+        updatedData = formData;
+      }
+    console.log('Data being sent to update:', updatedData);
+      
       this.authService.updateUser(this.selectedUser._id, updatedData).subscribe(
         (data: any) => {
           console.log('User updated successfully:', data);
           this.searchUsers(); 
+          setTimeout(() => this.updateSuccess = false, 3000);
         },
         (error: any) => {
           console.error('Error updating user:', error);
+          this.updateError = true;
+          setTimeout(() => this.updateError = false, 3000);
         }
       );
     }
   }
-
   deleteUser(): void {
     if (this.selectedUser) {
       this.authService.deleteUser(this.selectedUser._id).subscribe(
         (data: any) => {
           console.log('User deleted successfully:', data);
           this.searchUsers(); 
+          setTimeout(() => this.updateError = false, 3000);
         },
         (error: any) => {
           console.error('Error deleting user:', error);
@@ -224,5 +266,4 @@ export class UsersComponent implements OnInit {
       );
     }
   }
-
 }

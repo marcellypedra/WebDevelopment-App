@@ -1,4 +1,3 @@
-// src/controllers/shifts.ts
 import { Request, Response } from "express";
 import { collections } from "../db/database";
 import { ObjectId } from "mongodb";

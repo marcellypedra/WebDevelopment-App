@@ -47,19 +47,18 @@
 .team-badge {
   background-color: #007bff;
 }
-/* In roster.component.css */
 .shift-event {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .user-shift {
-  background-color: #0bceb2; /* your secondary-color */
+  background-color: #0bceb2;
   color: white;
 }
 
 .team-shift {
-  background-color: #2d4356; /* your color2 */
+  background-color: #2d4356;
   color: white;
 }
 .fc-daygrid-day.fc-day-today:hover,

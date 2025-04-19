@@ -17,7 +17,11 @@ export class ShiftsComponent implements OnInit {
   users: { _id: string; name: string }[] = [];
   shifts: any[] = [];
 
-  constructor(private router: Router, private shiftService: AuthService,     private snackBar: MatSnackBar) {}
+  constructor(
+    private router: Router, 
+    private shiftService: AuthService, 
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.getAllUsers();

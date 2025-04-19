@@ -110,15 +110,12 @@ export class RegisterComponent {
   
   submit() {
     if (!this.registerForm.valid) {
-      
-      Object.keys(this.registerForm.controls).forEach(key => {
-        const controlErrors = this.registerForm.get(key)?.errors;
-        if (controlErrors) {
-          console.error(`Field ${key} is invalid:`, controlErrors);
-        }
-      });  
+      this.snackBar.open('Please fix the form errors before submitting.', 'Close', {
+        duration: 3000,
+        panelClass: ['snack-error']
+      });
       return;
-    }
+    }    
   
     const { name, email, phoneNumber, DOB, nationality, address, idNumber, visaExpiryDate, roleType } = this.registerForm.value;
   
@@ -137,7 +134,6 @@ export class RegisterComponent {
         this.snackBar.open('Employee registered successfully!', 'Close', { 
           duration: 3000, panelClass: ['snack-success'] 
         });
-        //this.router.navigate(['/users']);
         window.location.href = '/users';
       },
       error: (err) => {
@@ -149,9 +145,7 @@ export class RegisterComponent {
       }
     });
   } 
-
   navigate() {
-    //this.router.navigate(['login']);
     window.location.href = '/login';
   }
 }

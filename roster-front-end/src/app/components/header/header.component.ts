@@ -13,7 +13,7 @@ export class HeaderComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (this.navbarNav && this.navbarNav.nativeElement.classList.contains('show')) {
-      // also close when click any where
+      // @@ also close when click any where
       if (!this.navbarNav.nativeElement.contains(event.target)) {
         const bsCollapse = Collapse.getOrCreateInstance(this.navbarNav.nativeElement);
         bsCollapse.hide();

@@ -27,11 +27,8 @@ export class LoginComponent {
     private snackBar: MatSnackBar
   ) {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
+      email: new FormControl('', [ Validators.required, Validators.email ]),
+      password: new FormControl('', [ Validators.required, Validators.minLength(6) ]),
       name: new FormControl(''),
     });
     this.loginForm.valueChanges.subscribe(() => {
@@ -78,11 +75,10 @@ export class LoginComponent {
     this.hidePassword = !this.hidePassword;
   }
   navigate() {
-    //this.router.navigate(['profile']);
     window.location.href = '/profile';
   }
   resetPassword(email: string) {
-    //@@ TODO :  password reset
+    // @@ TODO :  password reset
     console.log('Password reset requested for:', email);
     this.showSuccess('Password reset email sent. Please check your inbox.');
     this.closeModal();

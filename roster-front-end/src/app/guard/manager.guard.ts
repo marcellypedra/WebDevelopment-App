@@ -21,7 +21,6 @@ export class ManagerGuard implements CanActivate {
     else {
       console.log('User is not a Manager');
       this.showError('Unauthorized !!');
-      //this.router.navigate(['/login']); 
       window.location.href = '/login';
       return false;
     }

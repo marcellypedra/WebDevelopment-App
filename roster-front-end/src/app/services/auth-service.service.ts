@@ -36,7 +36,7 @@ export class AuthService {
   refreshToken(): Observable<string> {
     return this.http
       .post<{ accessToken: string }>(`${this.apiUrl}/auth/refreshToken`, {}, 
-      { withCredentials: true } // Ensure cookies are sent
+      { withCredentials: true } 
     ).pipe(
         tap(response => {
             sessionStorage.setItem('ROSTER-AUTH', response.accessToken);

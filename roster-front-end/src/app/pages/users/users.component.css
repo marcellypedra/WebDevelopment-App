@@ -128,8 +128,23 @@ app-input {
 .file-upload input[type="file"] {
   margin-top: 5px;
 }
+.success-message {
+  color: #155724;
+  background-color: #d4edda;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+}
 
-/* Responsive Design */
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
 @media (max-width: 900px) {
   .grid-container {
     grid-template-columns: 1fr;

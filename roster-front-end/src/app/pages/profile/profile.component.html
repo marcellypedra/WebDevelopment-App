@@ -1,72 +1,139 @@
 <app-layout
   title="Hi {{ currentUser?.name }}!"
-  [primaryBtnText]="'Save'" 
+  [primaryBtnText]="'Save'"
   (submit)="updateProfile()"
   [userPhoto]="userProfileImage"
 >
-
-<form [formGroup]="profileForm" class="profile-form-container">
-  <div class="form-section">
+  <form [formGroup]="profileForm" class="profile-form-container">
+    <div class="form-section">
       <h3>User Details</h3>
-      <p><b>Name:</b> {{ currentUser?.name }}</p>
-      <p><b>ID:</b> {{ currentUser?.idNumber }}</p>
-      <p><b>Birth:</b> {{ currentUser?.DOB | date:'dd/MM/yyyy'}}</p>
-      <p><b>Nationality:</b> {{ currentUser?.nationality }}</p>
-      <p *ngIf="currentUser?.visaExpiryDate"><b>Visa Expiry:</b> {{ currentUser?.visaExpiryDate | date:'dd/MM/yyyy' }}</p>
-      <p><b>Role:</b> {{ currentUser?.roleType }}</p>
-      <p><b>Phone:</b> {{ formatPhoneNumber(currentUser?.phoneNumber) }}</p>
-      <p><b>Email:</b> {{ currentUser?.email }}</p>
-      <p><b>Address:</b> {{ currentUser?.address }}</p>
-      
+      <p>
+        <b>Name:</b> {{ currentUser?.name }}
+      </p>
+      <p>
+        <b>ID:</b> {{ currentUser?.idNumber }}
+      </p>
+      <p>
+        <b>Birth:</b> {{ currentUser?.DOB | date: 'dd/MM/yyyy' }}
+      </p>
+      <p>
+        <b>Nationality:</b> {{ currentUser?.nationality }}
+      </p>
+      <p *ngIf="currentUser?.visaExpiryDate">
+        <b>Visa Expiry:</b> {{ currentUser?.visaExpiryDate | date: 'dd/MM/yyyy' }}
+      </p>
+      <p>
+        <b>Role:</b> {{ currentUser?.roleType }}
+      </p>
+      <p>
+        <b>Phone:</b> {{ formatPhoneNumber(currentUser?.phoneNumber) }}
+      </p>
+      <p>
+        <b>Email:</b> {{ currentUser?.email }}
+      </p>
+      <p>
+        <b>Address:</b> {{ currentUser?.address }}
+      </p>
     </div>
 
     <!-- Personal Information -->
     <div class="form-section">
       <h3>Do you need to update?</h3>
-      <app-input formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" maxlength="14" (ngModelChange)="onPhoneNumberChange($event)" placeholder="(00) 000-0000">
-        <img class="icon" src="/assets/icons/phone.png"/>
+      <app-input
+        formControlName="phoneNumber"
+        inputName="phoneNumber"
+        inputmode="tel"
+        label="Phone Number"
+        (ngModelChange)="onPhoneNumberChange($event)"
+        placeholder="(00) 000-0000"
+        [minlength]="6"
+        [maxlength]="13"
+      >
+        <img class="icon" src="/assets/icons/phone.png" />
       </app-input>
 
-      <app-input formControlName="email" inputName="email" type="email" label="Email" maxlength="30">
-        <img class="icon" src="/assets/icons/email.png"/>
+      <app-input
+        formControlName="email"
+        inputName="email"
+        type="email"
+        label="Email"
+        [maxlength]="50"
+      >
+        <img class="icon" src="/assets/icons/email.png" />
       </app-input>
 
-      <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
-        <img class="icon" src="/assets/icons/address.png"/>
+      <app-input
+        formControlName="address"
+        inputName="address"
+        type="text"
+        label="Address"
+        [maxlength]="200"
+      >
+        <img class="icon" src="/assets/icons/address.png" />
       </app-input>
     </div>
-
 
     <div class="form-section role-upload-section">
       <div class="file-upload">
         <h3>Upload Documents</h3>
-        
-        <div class="file-upload">
+        <div>
           <label for="profileImage">Upload a new profile picture</label>
-          <input type="file" id="profileImage" (change)="onFileSelect($event, 'profile')" accept="image/*">
+          <input
+            type="file"
+            id="profileImage"
+            (change)="onFileSelect($event, 'profile')"
+            accept="image/*"
+          />
+        </div>
+        <div>
+          <span>Actual Profile Picture</span>
+          <img
+            *ngIf="currentUser?.profileImage"
+            [src]="currentUser?.profileImage"
+            class="preview-image"
+          />
+        </div>
+
+        <div class="file-upload">
           <div>
-            <span>Actual Profile Picture</span>
-            <img *ngIf="userProfileImage" [src]="userProfileImage" class="preview-image"/>
+            <label for="idFile">Do you need to update your ID?</label>
+            <input
+              type="file"
+              id="idFile"
+              (change)="onFileSelect($event, 'id')"
+              accept="image/*"
+            />
+          </div>
+          <div>
+            <span>Actual ID Picture</span>
+            <img
+              *ngIf="currentUser?.idFile"
+              [src]="currentUser?.idFile"
+              class="preview-image"
+            />
           </div>
         </div>
 
-        <label for="idFile">Do you need to update your ID?</label>
-        <input type="file" id="idFile" (change)="onFileSelect($event, 'id')" accept="image/*">
-        <div>
-          <span>Actual ID Picture</span>
-          <img *ngIf="userIdFile" [src]="userIdFile" class="preview-image"/>
+        <div class="file-upload">
+          <div>
+            <label for="visaFile">Do you need to update your visa status?</label>
+            <input
+              type="file"
+              id="visaFile"
+              (change)="onFileSelect($event, 'visa')"
+              accept="image/*"
+            />
           </div>
-      </div>
-
-      <div class="file-upload">
-        <label for="visaFile">Do you need to update your visa status?</label>
-        <input type="file" id="visaFile" (change)="onFileSelect($event, 'visa')" accept="image/*">
-        <div>
-          <span>Actual Visa Picture</span>
-          <img *ngIf="userVisaFile" [src]="userVisaFile" class="preview-image"/>
+          <div>
+            <span>Actual Visa Picture</span>
+            <img
+              *ngIf="currentUser?.visaFile"
+              [src]="currentUser?.visaFile"
+              class="preview-image"
+            />
           </div>
+        </div>
       </div>
-      
     </div>
   </form>
 </app-layout>

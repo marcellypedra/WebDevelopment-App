@@ -67,7 +67,7 @@ export class RosterComponent implements OnInit {
       }
     }
 
-    // Fetch user shifts
+    // @@ Fetch user shifts
     this.authService.getShiftForUser(userId).subscribe({
       next: (userData) => {
         console.log('Team shifts data:', userData);
@@ -81,7 +81,7 @@ export class RosterComponent implements OnInit {
       }
     });
 
-    // Fetch team shifts
+    // @@ Fetch team shifts
     this.authService.getTeamShifts().subscribe({
       next: (teamData: any) => {
         console.log('Team shifts raw:', teamData);
@@ -110,8 +110,6 @@ export class RosterComponent implements OnInit {
     
     if (clickedDate) {
       this.activeDay = DateTime.fromISO(clickedDate);
-      
-      // Check both user and team shifts
       const allShifts = [
         ...(this.userShifts?.shiftsForUser || []),
         ...(this.teamShifts?.shiftsForTeam || [])
@@ -170,34 +168,39 @@ export class RosterComponent implements OnInit {
       classNames: ['user-shift'],
       extendedProps: { raw: shift }
     }));
-
-    const teamEvents = (this.teamShifts?.shiftsForTeam ?? []).map((shift: Shift) => ({
-      title: `${shift.startTime} - ${shift.endTime} (Team)`,
-      start: shift.shiftDate,
-      allDay: true,
-      classNames: ['team-shift'],
-      extendedProps: { raw: shift }
-    }));    
-
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      eventSources: [
-        {
-          events: userEvents,
-          color: 'blue', // User events color
-          textColor: 'white'
-        },
-        {
-          events: teamEvents,
-          color: 'green', // Team events color
-          textColor: 'white'
-        }
-      ]
-    };    
+  
+    const userShiftIds = new Set((this.userShifts?.shiftsForUser ?? []).map(s => s._id));
+  
+    // @@ Filter team shifts to exclude user's shifts
+    const teamEvents = (this.teamShifts?.shiftsForTeam ?? [])
+      .filter((shift: Shift) => !userShiftIds.has(shift._id))
+      .map((shift: Shift) => ({
+        title: `${shift.startTime} - ${shift.endTime} (Team)`,
+        start: shift.shiftDate,
+        allDay: true,
+        classNames: ['team-shift'],
+        extendedProps: { raw: shift }
+      }));
+  
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        eventSources: [
+          {
+            events: userEvents,
+            color: 'blue', 
+            textColor: 'white'
+          },
+          {
+            events: teamEvents,
+            color: 'green',
+            textColor: 'white'
+          }
+        ]
+    };
     setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
     console.log('Calendar events:', [...userEvents, ...teamEvents]);
-  }
-
+  } 
+  
   updateDailySummaries(): void {
     const daysInMonth = this.daysOfMonth;
     this.dailySummaries = daysInMonth.map(day => {

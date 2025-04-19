@@ -16,11 +16,15 @@ type InputTypes = "text" | "email" | "password" | "date";
   styleUrls: ['./input.component.scss']
 })
 export class InputComponent implements ControlValueAccessor {
+  @Input() formControl!: FormControl;
   @Input() type: InputTypes = "text";
   @Input() placeholder: string = "";
   @Input() label: string = "";
   @Input() inputName: string = "";
   @Input() mask: string = ""; 
+  @Input() maxlength: number | null = null;
+  @Input() minlength: number | null = null;
+
 
   value: string = '';
   onChange: any = () => {};
@@ -33,7 +37,15 @@ export class InputComponent implements ControlValueAccessor {
     this.onTouched();
   }
   writeValue(value: any): void {
-    this.value = value || '';
+    if (this.type === 'date' && value) {
+      const d = new Date(value);
+      const yyyy = d.getFullYear();
+      const mm = ('0' + (d.getMonth() + 1)).slice(-2);
+      const dd = ('0' + d.getDate()).slice(-2);
+      this.value = `${yyyy}-${mm}-${dd}`;
+    } else {
+      this.value = value || '';
+    }
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;

@@ -6,7 +6,12 @@
 <div class="grid-container">
   <div class="search-column">
     <form *ngIf="searchForm" [formGroup]="searchForm">
-      <app-input type="text" label="Search" formControlName="searchQuery" placeholder="Enter user name or email"></app-input>
+      <app-input 
+        type="text" 
+        label="Search" 
+        formControlName="searchQuery" 
+        placeholder="Enter user name or email"
+      ></app-input>
     </form>
     <button (click)="searchUsers()" [disabled]="!searchForm.valid">Search Users</button>
   </div>
@@ -15,7 +20,7 @@
     <div class="user-list-container" *ngIf="users && users.length > 0">
       <h3>List of Users</h3>
       <div *ngFor="let user of users" class="user-item" (click)="selectUser(user)">
-        <img *ngIf="user.profileImage" [src]="user.profileImage" alt="User Profile" />
+        <img *ngIf="user?.profileImage" [src]="user?.profileImage" alt="User Profile" />
         <div>
           <p>{{ user.name }}</p>
           <p>Role: {{ user.roleType }}</p>
@@ -27,23 +32,85 @@
   <div class="edit-user-column">
     <div class="edit-user" *ngIf="selectedUser">
       <h3>Edit User</h3>
+       
+      <!-- Success and error messages -->
+      <div *ngIf="updateSuccess" class="success-message">
+        User updated successfully!
+      </div>
+      <div *ngIf="updateError" class="error-message">
+        Failed to update user. Please try again.
+      </div>
+      
       <form [formGroup]="editForm">
                 <!-- User Details -->
-        <app-input formControlName="name" inputName="name" label="name"></app-input>
-        <app-input type="email" label="Email" formControlName="email" placeholder="Enter user email">></app-input>
-        <app-input type="password" label="password" formControlName="password"></app-input>
-        <app-input formControlName="phoneNumber" inputName="phoneNumber" inputmode="tel" label="Phone Number" maxlength="14" (ngModelChange)="onPhoneNumberChange($event)" placeholder="(00) 000-0000"></app-input>
-              
+        <app-input 
+          formControlName="name" 
+          inputName="name" 
+          label="name"
+          onlyLetters>
+        </app-input>
+        <app-input 
+          type="email" 
+          label="Email" 
+          formControlName="email" 
+          placeholder="Enter user email">
+        </app-input>
+        <app-input 
+          type="password" 
+          label="password" 
+          formControlName="password">
+        </app-input>
+        <app-input 
+          formControlName="phoneNumber" 
+          inputName="phoneNumber" 
+          inputmode="tel" 
+          label="Phone Number" 
+          [maxlength]="13" 
+          (ngModelChange)="onPhoneNumberChange($event)" 
+          placeholder="(00) 000-0000"
+          onlyNumbers>
+        </app-input>              
                 <!-- Personal Information -->
-        <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="DOB" inputName="DOB" InputTypes="date" label="Date of Birth">
+        <app-input 
+          mask="0000-00-00" 
+          placeholder="0000-00-00" 
+          formControlName="DOB" 
+          inputName="DOB" 
+          type="date" 
+          label="Date of Birth"
+          onlyNumbers>
       </app-input>
-      <app-input formControlName="nationality" inputName="nationality" type="text" label="Nationality">
+      <app-input 
+        formControlName="nationality" 
+        inputName="nationality" 
+        type="text" 
+        label="Nationality"
+        onlyLetters>
       </app-input>
-      <app-input formControlName="address" inputName="address" type="text" label="Address" maxlength="200">
+      <app-input 
+        formControlName="address" 
+        inputName="address" 
+        type="text" 
+        label="Address" 
+        [maxlength]="200">
       </app-input>
-      <app-input formControlName="idNumber" inputName="idNumber" type="text" label="ID Number" maxlength="15">
+      <app-input 
+        formControlName="idNumber" 
+        inputName="idNumber" 
+        type="text" 
+        label="ID Number" 
+        [maxlength]="15"
+        onlyNumbers>
       </app-input>
-      <app-input mask="0000-00-00" placeholder="0000-00-00" formControlName="visaExpiryDate" inputName="visaExpiryDate" InputTypes="date" label="Visa Expiry (Optional)">
+      <app-input 
+        mask="0000-00-00" 
+        placeholder="0000-00-00" 
+        formControlName="visaExpiryDate" 
+        inputName="visaExpiryDate" 
+        type="date" 
+        label="Visa Expiry (Optional)"
+        [maxlength]="10"
+        onlyNumbers>
       </app-input>
 
                 <!-- Role & Upload Documents -->
