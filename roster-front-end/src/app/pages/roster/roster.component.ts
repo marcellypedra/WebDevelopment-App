@@ -129,20 +129,22 @@ export class RosterComponent implements OnInit {
   
     const dateISO = this.activeDay.toISODate();
   
-    const userShifts = this.userShifts?.shiftsForUser?.filter(
-      shift => shift.shiftDate === dateISO
-    ).length || 0;
+    const userShifts = this.userShifts?.shiftsForUser?.filter(shift => {
+      return DateTime.fromISO(shift.shiftDate).toISODate() === dateISO;
+    }).length || 0;
   
-    const teamShifts = this.teamShifts?.shiftsForTeam?.filter(
-      shift => shift.shiftDate === dateISO
-    ).length || 0;
+    const teamShifts = this.teamShifts?.shiftsForTeam?.filter(shift => {
+      return DateTime.fromISO(shift.shiftDate).toISODate() === dateISO;
+    }).length || 0;
   
     return {
       date: dateISO,
       userShifts,
       teamShifts
     };
-  }  
+  }
+  
+
   getTotalHours(startTime: string, endTime: string): number {
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     const [endHours, endMinutes] = endTime.split(':').map(Number);
@@ -171,7 +173,6 @@ export class RosterComponent implements OnInit {
   
     const userShiftIds = new Set((this.userShifts?.shiftsForUser ?? []).map(s => s._id));
   
-    // @@ Filter team shifts to exclude user's shifts
     const teamEvents = (this.teamShifts?.shiftsForTeam ?? [])
       .filter((shift: Shift) => !userShiftIds.has(shift._id))
       .map((shift: Shift) => ({
@@ -182,24 +183,25 @@ export class RosterComponent implements OnInit {
         extendedProps: { raw: shift }
       }));
   
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        eventSources: [
-          {
-            events: userEvents,
-            color: 'blue', 
-            textColor: 'white'
-          },
-          {
-            events: teamEvents,
-            color: 'green',
-            textColor: 'white'
-          }
-        ]
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      eventSources: [
+        {
+          events: userEvents,
+          color: 'blue',
+          textColor: 'white'
+        },
+        {
+          events: teamEvents,
+          color: 'green',
+          textColor: 'white'
+        }
+      ]
     };
     setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
     console.log('Calendar events:', [...userEvents, ...teamEvents]);
-  } 
+  }
+  
   
   updateDailySummaries(): void {
     const daysInMonth = this.daysOfMonth;
